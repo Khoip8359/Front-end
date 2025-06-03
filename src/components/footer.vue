@@ -2,6 +2,16 @@
   <footer class="bg-dark text-light pt-5 pb-3 mt-auto">
     <div class="container">
       <div class="row g-4">
+
+        <div class="col-12 mt-4">
+          <h5 class="text-uppercase mb-3">Newsletter</h5>
+          <p class="text-secondary">Stay updated with the latest news from GaNews</p>
+          <form class="d-flex w-100" @submit.prevent>
+            <input type="email" class="form-control me-2" placeholder="Enter your email" required />
+            <button class="btn btn-info text-white" type="submit"><i class="fas fa-envelope"></i></button>
+          </form>
+        </div>
+
         <div class="col-md-4 col-lg-2">
           <h5 class="text-uppercase mb-3">News Categories</h5>
           <ul class="list-unstyled">
@@ -52,14 +62,6 @@
           </div>
         </div>
 
-        <div class="col-12 mt-4">
-          <h5 class="text-uppercase mb-3">Newsletter</h5>
-          <p class="text-secondary">Stay updated with the latest news from GaNews</p>
-          <form class="d-flex w-100" @submit.prevent>
-            <input type="email" class="form-control me-2" placeholder="Enter your email" required />
-            <button class="btn btn-info text-white" type="submit"><i class="fas fa-envelope"></i></button>
-          </form>
-        </div>
       </div>
 
       <hr class="my-4 border-secondary" />
