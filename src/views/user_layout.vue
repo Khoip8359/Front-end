@@ -119,20 +119,20 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-auto">
-      © 2025 - Your News Site
-    </footer>
+    <foter></foter>
   </div>
 </template>
 
 <script>
 import Banner from '@/components/banner.vue';
 import user_menu from '@/components/user_menu.vue';
+import foter from '@/components/footer.vue';
 
 export default {
   components: {
     Banner,
     user_menu,
+    foter,
   },
 };
 </script>
