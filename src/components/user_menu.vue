@@ -22,6 +22,9 @@
                     <li class="nav-item">
                     <a class="nav-link" href="#">Other</a>
                     </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="#">Mua gói</a>
+                    </li>
                 </ul>
             </div>
         </div>
