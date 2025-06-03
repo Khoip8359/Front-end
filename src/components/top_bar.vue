@@ -1,7 +1,8 @@
 <template>
+  
     <div class="row g-0 text-center align-items-center py-2 shadow-sm bg-white">
       <div class="col-2" id="logo">
-        <img class="img-fluid px-2" src="/src/assets/img/logo.png" alt="Logo" />
+        <RouterLink to="/"><img class="img-fluid px-2" src="/src/assets/img/logo.png" alt="Logo" /></RouterLink>
       </div>
       <div class="col-2 text-muted fw-semibold">03/06/2025 - 12:00:00</div>
       <div class="col-7 px-3">
@@ -14,4 +15,5 @@
         <RouterLink to="/login" class="btn btn-outline-primary btn-sm w-100">Login</RouterLink>
       </div>
     </div>
+  
 </template>
