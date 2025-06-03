@@ -25,7 +25,7 @@
             required
           />
         </div>
-        <RouterLink to="/" type="submit" class="btn btn-primary w-100">Login</RouterLink>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
       </form>
       <div v-if="errorMessage" class="alert alert-danger mt-3" role="alert">
         {{ errorMessage }}
@@ -56,7 +56,7 @@ export default {
       // Ví dụ xử lý đăng nhập giả lập
       if (this.email === "user@example.com" && this.password === "123456") {
         alert("Login successful!");
-        // Chuyển hướng hoặc gọi API
+        this.$router.push('/')
       } else {
         this.errorMessage = "Invalid email or password.";
       }
