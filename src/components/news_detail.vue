@@ -1,9 +1,9 @@
 <template>
-  <div class="container py-4">
+  <div class="container py-4" v-if="news && news.newsId">
     <!-- Title -->
     <div class="row mb-4">
       <div class="col">
-        <h2 class="fw-bold text-center">{{ article.title }}</h2>
+        <h2 class="fw-bold text-center">{{ news.title }}</h2>
       </div>
     </div>
 
@@ -11,29 +11,28 @@
     <div class="row g-3">
       <!-- React -->
       <div class="col-md-1 d-flex flex-column align-items-center">
-        <div class="bg-success text-white p-2 w-100 text-center mb-2 rounded"><i class="fa-solid fa-thumbs-up"></i></div>
-        <div class="bg-primary text-white p-2 w-100 text-center rounded"><i class="fa-solid fa-star"></i></div>
+        <div class="bg-success text-white p-2 w-100 text-center mb-2 rounded">
+          <i class="fa-solid fa-thumbs-up"></i>
+        </div>
+        <div class="bg-primary text-white p-2 w-100 text-center rounded">
+          <i class="fa-solid fa-star"></i>
+        </div>
       </div>
 
-      <!-- Main Content (Thumbnail + Subtitle + Details + Comments + Recommend) -->
+      <!-- Main Content -->
       <div class="col-md-8">
-        <!-- Thumbnail + Subtitle -->
-        <div class="row g-3 mb-3">
-          <div class="col-md-8">
-            <img :src="article.thumbnail" class="img-fluid rounded w-100" alt="Thumbnail" />
-          </div>
-          <div class="col-md-4">
-            <div class="bg-light h-100 p-3 rounded">
-              <h6 class="fw-bold mb-2">Subtitle</h6>
-              <p class="mb-0">{{ article.subtitle }}</p>
-            </div>
-          </div>
-        </div>
+        <div class="container py-4">
+          <h2 class="fw-bold mb-3">{{ news.title }}</h2>
+          <h5 class="text-muted mb-4">{{ news.subtitle }}</h5>
+          <img :src="news.thumbnail" class="img-fluid rounded mb-4" alt="Thumbnail" />
 
-        <!-- Details -->
-        <div class="mb-4">
-          <div class="bg-white p-3 rounded shadow-sm">
-            <p class="fs-5 mb-0">{{ article.details }}</p>
+          <!-- Hiển thị từng phần detail -->
+          <div v-for="(detail, index) in news.details" :key="index" class="mb-4">
+            <p v-html="detail"></p>
+          </div>
+
+          <div class="text-end text-muted">
+            ✍️ {{ news.authorName }} – 🗓 {{ formatDate(news.createdDate) }}
           </div>
         </div>
 
@@ -41,7 +40,11 @@
         <div class="mb-4">
           <div class="bg-light p-3 border rounded">
             <h5 class="mb-3">Bình luận</h5>
-            <textarea class="form-control mb-2" rows="3" placeholder="Viết bình luận..."></textarea>
+            <textarea
+              class="form-control mb-2"
+              rows="3"
+              placeholder="Viết bình luận..."
+            ></textarea>
             <button class="btn btn-primary">Gửi</button>
           </div>
         </div>
@@ -79,27 +82,51 @@
 
     <!-- Advertising Banner -->
     <div class="row mt-4">
-      <div class="col">
-        <div class="bg-secondary text-white text-center p-3 rounded">
-          Quảng cáo - Banner
+      <div class="col-12 p-0">
+        <div class="text-center">
+          <img src="/src/assets/img/qc2.jpg" alt="" class="img-fluid w-100" />
         </div>
       </div>
     </div>
   </div>
+
+  <div v-else class="text-center py-4">
+    <p>Đang tải dữ liệu...</p>
+  </div>
 </template>
 
 <script>
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import axios from "axios";
+
 export default {
   setup() {
-    const article = {
-      title: 'TP.HCM lo vỡ tiến độ khởi công metro số 2 cuối năm nay',
-      thumbnail: 'https://placehold.co/800x450',
-      subtitle: 'Tuyến metro số 2 (Bến Thành - Tham Lương) vẫn đang gặp nhiều vướng mắc trong giải phóng mặt bằng.',
-      details: `UBND TP.HCM dự kiến khởi công tuyến metro số 2 vào tháng 12,
-      nhưng hiện nhiều hạng mục đang chậm tiến độ, ảnh hưởng đến kế hoạch chung của dự án...`
-    };
-    return { article };
-  }
+    const news = ref(null);
+    const route = useRoute();
+
+    onMounted(async () => {
+      const id = route.params.newsId;
+      if (!id) {
+        console.error("Không có newsId trong route params");
+        return;
+      }
+      try {
+        const res = await axios.get(`http://localhost:8080/api/news/detail/${id}`);
+        news.value = res.data;
+      } catch (error) {
+        console.error("Lấy tin tức thất bại:", error);
+      }
+    });
+
+    function formatDate(dateStr) {
+      if (!dateStr) return "";
+      const d = new Date(dateStr);
+      return d.toLocaleDateString("vi-VN");
+    }
+
+    return { news, formatDate };
+  },
 };
 </script>
 

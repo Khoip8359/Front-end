@@ -17,8 +17,9 @@ const router = createRouter({
           component: main_content
         },
         {
-          path: 'detail',
-          component: news_detail
+          path: 'detail/:newsId',  // Tham số động newsId
+          component: news_detail,
+          props: true             // Truyền params dưới dạng props
         }
       ]
     },
