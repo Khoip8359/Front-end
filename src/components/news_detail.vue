@@ -24,11 +24,11 @@
         <div class="container py-4">
           <h2 class="fw-bold mb-3">{{ news.title }}</h2>
           <h5 class="text-muted mb-4">{{ news.subtitle }}</h5>
-          <img :src="news.thumbnail" class="img-fluid rounded mb-4" alt="Thumbnail" />
+          <img :src="`/src/assets/img/${news.thumbnail}`" class="img-fluid rounded mb-4" alt="Thumbnail" />
 
           <!-- Hiển thị từng phần detail -->
-          <div v-for="(detail, index) in news.details" :key="index" class="mb-4">
-            <p v-html="detail"></p>
+          <div v-for="(detail, index) in news.newsDetails" :key="index" class="mb-4">
+            <p v-html="detail.detail"></p>
           </div>
 
           <div class="text-end text-muted">
@@ -99,24 +99,28 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import { newsService } from "@/services/NewsService";
 
 export default {
   setup() {
     const news = ref(null);
     const route = useRoute();
 
-    onMounted(async () => {
-      const id = route.params.newsId;
-      if (!id) {
-        console.error("Không có newsId trong route params");
-        return;
-      }
+    const fetchDetail = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/news/detail/${id}`);
-        news.value = res.data;
-      } catch (error) {
-        console.error("Lấy tin tức thất bại:", error);
+        const newsId = route.params.newsId;  // lấy newsId từ URL
+        if (!newsId) {
+          throw new Error('newsId không tồn tại trong route params');
+        }
+        const data = await newsService.getNewsDetail(newsId);
+        news.value = data;
+      } catch (err) {
+        console.error('Error fetching news:', err);
       }
+    }
+
+    onMounted(() => {
+      fetchDetail()
     });
 
     function formatDate(dateStr) {

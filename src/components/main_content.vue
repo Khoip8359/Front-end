@@ -18,7 +18,7 @@
         <div class="row g-0 border my-1">
           <div class="col-md-4">
             <img
-              :src="news.thumbnail ? `/images/${news.thumbnail}` : 'https://placehold.co/400x250'"
+              :src="news.thumbnail ? `src/assets/img/${news.thumbnail}` : 'https://placehold.co/400x250'"
               class="img-fluid h-100 object-fit-cover"
               alt="Ảnh bài viết"
             />
@@ -68,15 +68,19 @@
     </div>
 
     <!-- Right Sidebar -->
-    <div class="col-3 d-flex flex-column gap-3 text-center">
+    <div class="col-3 d-flex flex-column gap-3 text-center p-3">
       <div>
         <h6 class="mb-2">🔥 Hot News</h6>
-        <ul class="small mb-0">
-          <li v-for="news in hotNews" :key="news.id">
-            {{ news.title }}
+        <ul class="list-unstyled small mb-0">
+          <li v-for="news in hotNews" :key="news.newsId" class="mb-2">
+            <div class="d-flex align-items-center border">
+              <img :src="news.thumbnail ? `src/assets/img/${news.thumbnail}` : 'https://placehold.co/400x250'" alt="thumbnail" class="me-2 rounded" style="width: 60px; height: 60px; object-fit: cover;">
+              <span>{{ news.title }}</span>
+            </div>
           </li>
         </ul>
       </div>
+
       <div class="bg-success text-white py-3 rounded shadow-sm fw-semibold">💡 RECOMMEND NEWS</div>
       <div class="bg-primary text-white py-3 rounded shadow-sm fw-semibold chat-box">💬</div>
     </div>
@@ -85,36 +89,44 @@
 
 <script>
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import { newsService } from '../services/NewsService.js'
 
 export default {
   setup() {
     const newsList = ref([])
     const hotNews = ref([])
+    const isLoading = ref(false)
+    const error = ref(null)
 
     const currentPage = ref(0)
     const totalPages = ref(1)
 
     const fetchNews = async (page = 0) => {
+      isLoading.value = true
+      error.value = null
+      
       try {
-        const res = await axios.get(`http://localhost:8080/api/home/list?page=${page}`)
-        newsList.value = res.data.content
-        totalPages.value = res.data.totalPages
-        currentPage.value = res.data.number
-      } catch (error) {
-        console.error('Lỗi khi lấy danh sách tin tức:', error)
+        const data = await newsService.getNews(page)
+        newsList.value = data.content
+        totalPages.value = data.totalPages
+        currentPage.value = data.number
+      } catch (err) {
+        error.value = err.message
+        console.error('Error fetching news:', err)
+      } finally {
+        isLoading.value = false
       }
     }
 
     const fetchHotNews = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/hotNews')
-        hotNews.value = res.data
-      } catch (error) {
-        console.error('Lỗi khi lấy hot news:', error)
+        const data = await newsService.getHotNews()
+        hotNews.value = data
+      } catch (err) {
+        console.error('Error fetching hot news:', err)
       }
     }
-
+    
     const goToPage = (page) => {
       if (page >= 0 && page < totalPages.value) {
         fetchNews(page)
@@ -139,6 +151,8 @@ export default {
     return {
       newsList,
       hotNews,
+      isLoading,
+      error,
       currentPage,
       totalPages,
       goToPage,
