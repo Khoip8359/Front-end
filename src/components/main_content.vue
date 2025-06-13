@@ -7,7 +7,7 @@
         <div class="sticky-top" style="top: 100px;">
           <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-0">
-              <img src="/Test/img/qc1.jpg" class="img-fluid rounded" alt="Advertisement" />
+              <img src="/img/qc1.jpg" class="img-fluid rounded" alt="Advertisement" />
             </div>
           </div>
           

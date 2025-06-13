@@ -34,7 +34,7 @@
             <div class="position-relative">
               <img 
                 class="rounded-circle shadow-sm border border-3 border-primary" 
-                src="/Test/img/logo.png" 
+                src="/img/logo.png" 
                 alt="Logo"
                 style="width: 55px; height: 55px; object-fit: cover; transition: transform 0.3s ease;"
                 @mouseover="$event.target.style.transform = 'scale(1.1)'"
