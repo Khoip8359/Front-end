@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>ESPORT GANEWS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background:#0a0a0a;
+      font-family:'Orbitron',sans-serif;
+      display:flex; justify-content:center; align-items:center;
+      height:100vh;
+    }
+    .banner {
+      width:1500px; height:220px;
+      background:linear-gradient(90deg,#ff007f,#1a1a1a,#000);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 40px;
+      border-radius:12px;
+      box-shadow:0 0 30px #ff33cc80;
+      overflow:hidden;
+    }
+    .left {
+      display:flex; align-items:center; gap:20px;
+    }
+    .icon-circle {
+      width:60px; height:60px;
+      border-radius:50%;
+      background:#000;
+      border:2px solid #0ff;
+      font-size:28px; color:white;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 0 12px #00f0ff;
+    }
+    .logo-box {
+      display:flex; flex-direction:column; align-items:center;
+    }
+    .logo-box img {
+      width:160px; height:100px;
+      border-radius:10px;
+      border:2px solid white;
+      box-shadow:0 0 15px #ff00ff80;
+      object-fit:cover;
+    }
+    .logo-box p {
+      margin-top:6px;
+      font-size:14px;
+      color:#ccc;
+      text-shadow:0 0 5px #0ff;
+    }
+    .center-text {
+      color:white;
+      text-align:center;
+      font-size:58px;
+      font-weight:bold;
+      text-shadow:0 0 14px #0ff, 0 0 20px #f0f;
+    }
+    .right img {
+  height: 180px;
+  border-radius: 10px;
+  box-shadow:
+    0 0 15px #0ff,
+    0 0 30px #0ff,
+    0 0 45px #f0f;
+  transition: transform 0.3s ease;
+}
+
+
+    .right img:hover {
+      transform:scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <div class="left">
+      <div class="icon-circle">🎮</div>
+      <div class="logo-box">
+        <img src="img/logo.png" alt="Logo Esport">
+        <p>Your Esport Zone</p>
+      </div>
+    </div>
+    <div class="center-text">ESPORT<br>GANEWS</div>
+    <div class="right">
+      <img src="img/banner2.jpg" alt="Neon Controller">
+    </div>
+  </div>
+</body>
+</html>
