@@ -231,7 +231,8 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { newsService } from '../services/NewsService.js'
 
 export default {
@@ -243,12 +244,16 @@ export default {
     const currentPage = ref(0)
     const totalPages = ref(1)
 
-    const fetchNews = async (page = 0) => {
+    const route = useRoute()
+    const categoryId = ref(Number(route.params.categoryId))
+
+    // Hàm lấy tin theo category
+    const fetchCategory = async (page = 0) => {
       isLoading.value = true
       error.value = null
-      
       try {
-        const data = await newsService.getNews(page)
+        console.log('Fetching category:', categoryId.value)
+        const data = await newsService.getNewsByCategory(categoryId.value, page)
         newsList.value = data.content
         totalPages.value = data.totalPages
         currentPage.value = data.number
@@ -260,6 +265,19 @@ export default {
       }
     }
 
+    // Watch để theo dõi thay đổi categoryId
+    watch(
+      () => route.params.categoryId,
+      (newVal) => {
+        categoryId.value = Number(newVal)
+        if (!isNaN(categoryId.value)) {
+          fetchCategory(0)
+        }
+      },
+      { immediate: true }
+    )
+
+    // Lấy tin hot
     const fetchHotNews = async () => {
       try {
         const data = await newsService.getHotNews()
@@ -268,14 +286,16 @@ export default {
         console.error('Error fetching hot news:', err)
       }
     }
-    
+
+    // Chuyển trang
     const goToPage = (page) => {
       if (page >= 0 && page < totalPages.value) {
-        fetchNews(page)
+        fetchCategory(page)
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     }
 
+    // Định dạng ngày
     const formatDate = (dateString) => {
       if (!dateString) return ''
       const d = new Date(dateString)
@@ -286,22 +306,23 @@ export default {
       })
     }
 
+    // Phân trang
     const visiblePages = computed(() => {
       const pages = []
       const start = Math.max(1, currentPage.value - 1)
       const end = Math.min(totalPages.value, currentPage.value + 3)
-      
       for (let i = start; i <= end; i++) {
         pages.push(i)
       }
       return pages
     })
 
+    // Khi component mount
     onMounted(() => {
-      fetchNews()
       fetchHotNews()
     })
 
+    // Trả về để dùng trong template
     return {
       newsList,
       hotNews,

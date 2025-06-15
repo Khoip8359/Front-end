@@ -9,6 +9,7 @@ export const newsService = {
       })
       return response.data
     } catch (error) {
+      console.error('getNews error:', error)
       throw new Error('Không thể tải danh sách tin tức')
     }
   },
@@ -19,7 +20,9 @@ export const newsService = {
       const response = await apiClient.get('/api/hotNews')
       return response.data
     } catch (error) {
-      throw new Error('Không thể tải hot news')
+      console.error('getHotNews error:', error)
+      // Return empty array instead of throwing to avoid UI crash
+      return []
     }
   },
 
@@ -29,7 +32,21 @@ export const newsService = {
       const response = await apiClient.get(`/api/news/detail/${newsId}`)
       return response.data
     } catch (error) {
+      console.error('getNewsDetail error:', error)
       throw new Error('Không thể tải chi tiết tin tức')
+    }
+  },
+
+  // Lấy tin tức theo categoryId (Integer)
+  async getNewsByCategory(categoryId, page = 0, size = 5) {
+    try {
+      const response = await apiClient.get(`/api/news/category/${categoryId}`, {
+        params: { page, size }
+      })
+      return response.data
+    } catch (error) {
+      console.error('getNewsByCategory error:', error)
+      throw new Error('Không thể tải tin tức theo danh mục')
     }
   }
 }
