@@ -114,7 +114,6 @@
           <!-- Home Link -->
           <li class="nav-item">
             <RouterLink class="nav-link text-white fw-semibold px-3 py-2 rounded-pill mx-1" to="/">
-              <i class="bi bi-house-door me-1"></i>
               Trang chủ
             </RouterLink>
           </li>
@@ -129,16 +128,6 @@
             </RouterLink>
           </li>
         </ul>
-      </div>
-
-      <!-- Additional Action Buttons -->
-      <div class="d-none d-lg-flex">
-        <button class="btn btn-outline-light btn-sm rounded-pill me-2">
-          <i class="bi bi-bell"></i>
-        </button>
-        <button class="btn btn-outline-light btn-sm rounded-pill">
-          <i class="bi bi-gear"></i>
-        </button>
       </div>
     </div>
   </nav>

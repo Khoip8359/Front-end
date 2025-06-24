@@ -1,6 +1,5 @@
 <template>
   <div class="container-fluid py-4" v-if="news && news.newsId">
-
     <!-- Main Content Layout -->
     <div class="row g-4">
       <!-- Left Sidebar - Reactions -->
@@ -10,22 +9,22 @@
             <!-- Like Button -->
             <div class="btn btn-success btn-lg d-flex flex-column align-items-center py-3 shadow-sm position-relative">
               <i class="fa-solid fa-thumbs-up fs-4 mb-1"></i>
-              <small class="fw-bold">Like</small>
+              <small class="fw-bold">Thích</small>
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                99+
+                {{ formatCount(news.likeCount || 0) }}
               </span>
             </div>
             
             <!-- Favorite Button -->
             <div class="btn btn-warning btn-lg d-flex flex-column align-items-center py-3 shadow-sm">
               <i class="fa-solid fa-star fs-4 mb-1"></i>
-              <small class="fw-bold">Save</small>
+              <small class="fw-bold">Lưu</small>
             </div>
             
             <!-- Share Button -->
-            <div class="btn btn-info btn-lg d-flex flex-column align-items-center py-3 shadow-sm">
-              <i class="fa-solid fa-share fs-4 mb-1"></i>
-              <small class="fw-bold">Share</small>
+            <div class="btn btn-info btn-lg d-flex flex-column align-items-center py-3 shadow-sm" @click="shareArticle">
+              <i class="fa-solid fa-share-from-square fs-4 mb-1"></i>
+              <small class="fw-bold">Chia sẻ</small>
             </div>
           </div>
         </div>
@@ -38,8 +37,8 @@
           <div class="card-body p-5">
             <!-- Article Header -->
             <div class="mb-4">
-              <h2 class="fw-bold mb-3 text-dark">{{ news.title }}</h2>
-              <h5 class="text-muted mb-4 fst-italic">{{ news.subtitle }}</h5>
+              <h1 class="fw-bold mb-3 text-dark">{{ news.title }}</h1>
+              <h5 class="text-muted mb-4 fst-italic" v-if="news.subtitle">{{ news.subtitle }}</h5>
               
               <!-- Author & Date Info -->
               <div class="d-flex align-items-center gap-3 mb-4">
@@ -47,29 +46,49 @@
                   <div class="bg-primary rounded-circle p-2 me-2">
                     <i class="fa-solid fa-user text-white"></i>
                   </div>
-                  <span class="fw-semibold">{{ news.authorName }}</span>
+                  <span class="fw-semibold">{{ news.authorName || 'Tác giả' }}</span>
                 </div>
                 <div class="d-flex align-items-center text-muted">
                   <i class="fa-regular fa-calendar me-2"></i>
                   <span>{{ formatDate(news.createdDate) }}</span>
                 </div>
+                <div class="d-flex align-items-center text-muted">
+                  <i class="fa-regular fa-eye me-2"></i>
+                  <span>{{ formatCount(news.viewCount || 0) }} lượt xem</span>
+                </div>
               </div>
             </div>
 
             <!-- Featured Image -->
-            <div class="mb-5 text-center">
+            <div class="mb-5 text-center" v-if="news.thumbnail">
               <img 
-                :src="`/Test/img/${news.thumbnail}`" 
+                :src="`/img/${news.thumbnail}`" 
                 class="img-fluid rounded-4 shadow" 
                 alt="Article Thumbnail"
                 style="max-height: 400px; object-fit: cover; width: 100%;"
+                @error="handleImageError"
               />
             </div>
 
             <!-- Article Content -->
             <div class="article-content">
-              <div v-for="(detail, index) in news.details" :key="index" class="mb-4">
-                <div class="fs-5 lh-lg" v-html="detail"></div>
+              <div v-if="news.details && news.details.length > 0">
+                <div v-for="(detail, index) in news.details" :key="index" class="mb-4">
+                  <div class="fs-5 lh-lg" v-html="detail"></div>
+                </div>
+              </div>
+              <div v-else class="text-center py-4">
+                <p class="text-muted">Nội dung bài viết đang được cập nhật...</p>
+              </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="mt-4" v-if="news.tags && news.tags.length > 0">
+              <h6 class="fw-bold mb-3">Thẻ:</h6>
+              <div class="d-flex flex-wrap gap-2">
+                <span v-for="tag in news.tags" :key="tag" class="badge bg-light text-dark border px-3 py-2">
+                  {{ tag }}
+                </span>
               </div>
             </div>
           </div>
@@ -80,12 +99,14 @@
           <div class="card-header bg-light border-0 py-4">
             <h5 class="mb-0 fw-bold">
               <i class="fa-regular fa-comments me-2 text-primary"></i>
-              Bình luận
+              Bình luận ({{ comments.length }})
             </h5>
           </div>
           <div class="card-body p-4">
+            <!-- Comment Form -->
             <div class="mb-4">
               <textarea
+                v-model="newComment"
                 class="form-control border-2 rounded-3"
                 rows="4"
                 placeholder="Chia sẻ suy nghĩ của bạn về bài viết này..."
@@ -93,14 +114,39 @@
               ></textarea>
               <div class="d-flex justify-content-between align-items-center mt-3">
                 <small class="text-muted">
-                  <i class="fa-solid fa-info-circle me-1"></i>
                   Hãy giữ bình luận lịch sự và tích cực
                 </small>
-                <button class="btn btn-primary px-4 py-2 rounded-pill">
+                <button 
+                  class="btn btn-primary px-4 py-2 rounded-pill"
+                  @click="submitComment"
+                  :disabled="!newComment.trim()"
+                >
                   <i class="fa-solid fa-paper-plane me-2"></i>
                   Gửi bình luận
                 </button>
               </div>
+            </div>
+
+            <!-- Comments List -->
+            <div v-if="comments.length > 0">
+              <div v-for="comment in comments" :key="comment.id" class="border-bottom pb-3 mb-3">
+                <div class="d-flex align-items-start">
+                  <div class="bg-secondary rounded-circle p-2 me-3">
+                    <i class="fa-solid fa-user text-white"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                      <strong>{{ comment.author }}</strong>
+                      <small class="text-muted">{{ formatDate(comment.createdDate) }}</small>
+                    </div>
+                    <p class="mb-0">{{ comment.content }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-center py-4">
+              <i class="fa-regular fa-comments display-6 text-muted"></i>
+              <p class="text-muted mt-2">Chưa có bình luận nào</p>
             </div>
           </div>
         </div>
@@ -115,15 +161,24 @@
           </div>
           <div class="card-body p-4">
             <div class="row g-3">
-              <div class="col-md-4" v-for="i in 3" :key="i">
+              <div class="col-md-4" v-for="article in suggestNews.slice(0, 3)" :key="article.newsId">
                 <div class="card h-100 border-0 shadow-sm">
                   <div class="card-body p-3">
-                    <div class="bg-light rounded-3 p-3 mb-2 text-center">
+                    <div class="bg-light rounded-3 p-3 mb-2 text-center" v-if="!article.thumbnail">
                       <i class="fa-solid fa-newspaper fs-3 text-muted"></i>
                     </div>
-                    <h6 class="card-title">Tin tức gợi ý {{ i }}</h6>
-                    <p class="card-text small text-muted">Mô tả ngắn về bài viết...</p>
-                    <a href="#" class="btn btn-outline-success btn-sm">Đọc thêm</a>
+                    <img 
+                      v-else
+                      :src="`/img/${article.thumbnail}`" 
+                      class="img-fluid rounded-3 mb-2"
+                      style="height: 100px; object-fit: cover; width: 100%;"
+                      alt="Suggested article"
+                    />
+                    <h6 class="card-title">{{ article.title || `Tin tức gợi ý ${article.newsId}` }}</h6>
+                    <p class="card-text small text-muted">{{ article.subtitle || 'Mô tả ngắn về bài viết...' }}</p>
+                    <RouterLink :to="`/detail/${article.newsId}`" class="btn btn-outline-success btn-sm">
+                      Đọc thêm
+                    </RouterLink>
                   </div>
                 </div>
               </div>
@@ -136,24 +191,46 @@
       <div class="col-xl-3 col-lg-3 col-md-3">
         <div class="sticky-top" style="top: 20px;">
           <!-- Hot News -->
-          <div class="card shadow-lg border-0 rounded-4 mb-4 overflow-hidden">
-            <div class="card-header bg-danger text-white py-3 border-0">
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-danger text-white py-3">
               <h6 class="mb-0 fw-bold">
                 <i class="fa-solid fa-fire me-2"></i>
-                Tin nóng hôm nay
+                Tin nóng
               </h6>
             </div>
             <div class="card-body p-0">
-              <div class="list-group list-group-flush">
-                <a href="#" class="list-group-item list-group-item-action px-4 py-3 border-0" v-for="i in 5" :key="i">
-                  <div class="d-flex align-items-start">
-                    <span class="badge bg-danger rounded-pill me-3 mt-1">{{ i }}</span>
-                    <div>
-                      <h6 class="mb-1 fw-semibold">Tin nóng số {{ i }}</h6>
-                      <p class="mb-0 small text-muted">Mô tả ngắn gọn về tin tức này...</p>
+              <div v-if="hotNews.length === 0" class="text-center py-4">
+                <i class="fa-solid fa-newspaper display-4 text-muted"></i>
+                <p class="text-muted mt-2">Chưa có tin nóng</p>
+              </div>
+              <div v-else>
+                <RouterLink
+                  v-for="(hotArticle, index) in hotNews.slice(0, 5)"
+                  :key="hotArticle.newsId"
+                  :to="`/detail/${hotArticle.newsId}`"
+                  class="text-decoration-none"
+                >
+                  <div class="d-flex align-items-center p-3 border-bottom hot-news-item position-relative">
+                    <div class="flex-shrink-0 me-3 position-relative">
+                      <img 
+                        :src="hotArticle.thumbnail ? `/img/${hotArticle.thumbnail}` : 'https://placehold.co/60x60'" 
+                        alt="thumbnail" 
+                        class="rounded"
+                        style="width: 60px; height: 60px; object-fit: cover;"
+                      >
+                      <span class="position-absolute top-0 start-0 translate-middle badge bg-danger rounded-pill">
+                        {{ index + 1 }}
+                      </span>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="mb-1 fw-semibold text-dark hot-news-title">{{ hotArticle.title }}</h6>
+                      <small class="text-muted">
+                        <i class="fa-regular fa-clock me-1"></i>
+                        {{ formatDate(hotArticle.createdDate) }}
+                      </small>
                     </div>
                   </div>
-                </a>
+                </RouterLink>
               </div>
             </div>
           </div>
@@ -168,11 +245,17 @@
                 <div class="input-group mb-3">
                   <input 
                     type="email" 
+                    v-model="email"
                     class="form-control border-0 rounded-start-pill" 
                     placeholder="Email của bạn"
                   />
-                  <button class="btn btn-light rounded-end-pill px-4" type="button">
-                    <i class="fa-solid fa-arrow-right text-primary"></i>
+                  <button 
+                    class="btn btn-light rounded-end-pill px-4" 
+                    type="button"
+                    @click="subscribeNewsletter"
+                    :disabled="!isValidEmail(email)"
+                  >
+                    <i class="fa-regular fa-paper-plane"></i>
                   </button>
                 </div>
                 <small class="opacity-75">Chúng tôi không spam email</small>
@@ -185,16 +268,16 @@
             <div class="card-body p-4 text-center">
               <h6 class="fw-bold mb-3">Theo dõi chúng tôi</h6>
               <div class="d-flex justify-content-center gap-2">
-                <a href="#" class="btn btn-primary btn-sm rounded-circle p-2">
+                <a href="#" class="btn btn-primary btn-sm rounded-circle p-2" aria-label="Facebook">
                   <i class="fa-brands fa-facebook-f"></i>
                 </a>
-                <a href="#" class="btn btn-info btn-sm rounded-circle p-2">
+                <a href="#" class="btn btn-info btn-sm rounded-circle p-2" aria-label="Twitter">
                   <i class="fa-brands fa-twitter"></i>
                 </a>
-                <a href="#" class="btn btn-danger btn-sm rounded-circle p-2">
+                <a href="#" class="btn btn-danger btn-sm rounded-circle p-2" aria-label="YouTube">
                   <i class="fa-brands fa-youtube"></i>
                 </a>
-                <a href="#" class="btn btn-success btn-sm rounded-circle p-2">
+                <a href="#" class="btn btn-success btn-sm rounded-circle p-2" aria-label="WhatsApp">
                   <i class="fa-brands fa-whatsapp"></i>
                 </a>
               </div>
@@ -216,6 +299,7 @@
                 alt="Advertisement" 
                 class="img-fluid rounded-3"
                 style="max-height: 200px; object-fit: cover;"
+                @error="handleAdError"
               />
             </div>
           </div>
@@ -229,7 +313,7 @@
     <div class="row justify-content-center">
       <div class="col-md-6 text-center py-5">
         <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
-          <span class="visually-hidden">Loading...</span>
+          <span class="visually-hidden">Đang tải...</span>
         </div>
         <h5 class="text-muted">Đang tải dữ liệu...</h5>
         <p class="text-muted">Vui lòng đợi trong giây lát</p>
@@ -239,15 +323,19 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
-import axios from "axios";
 import { newsService } from "@/services/NewsService";
 
 export default {
   setup() {
     const news = ref(null);
     const route = useRoute();
+    const hotNews = ref([]);
+    const suggestNews = ref([]);
+    const comments = ref([]);
+    const newComment = ref('');
+    const email = ref('');
 
     const fetchDetail = async () => {
       try {
@@ -257,16 +345,113 @@ export default {
         }
         const data = await newsService.getNewsDetail(newsId);
         news.value = data;
+        
+        // Fetch related data
+        await Promise.all([
+          // fetchComments(newsId),
+          // updateViewCount(newsId)
+        ]);
       } catch (err) {
         console.error('Error fetching news:', err);
       }
-    }
+    };
 
-    onMounted(() => {
-      fetchDetail()
-    });
+    const fetchHotNews = async () => {
+      try {
+        const data = await newsService.getHotNews();
+        hotNews.value = data;
+      } catch (err) {
+        console.error('Error fetching hot news:', err);
+      }
+    };
 
-    function formatDate(dateStr) {
+    const fetchSuggestNews = async () => {
+      try {
+        const data = await newsService.getSuggestNews();
+        suggestNews.value = data;
+      } catch (err) {
+        console.error('Error fetching suggest news:', err);
+      }
+    };
+
+    // const fetchComments = async (newsId) => {
+    //   try {
+    //     const data = await newsService.getComments(newsId);
+    //     comments.value = data || [];
+    //   } catch (err) {
+    //     console.error('Error fetching comments:', err);
+    //     comments.value = [];
+    //   }
+    // };
+
+    // const updateViewCount = async (newsId) => {
+    //   try {
+    //     await newsService.updateViewCount(newsId);
+    //   } catch (err) {
+    //     console.error('Error updating view count:', err);
+    //   }
+    // };
+
+    const submitComment = async () => {
+      if (!newComment.value.trim()) return;
+      
+      try {
+        const comment = {
+          newsId: route.params.newsId,
+          content: newComment.value.trim(),
+          author: 'Người dùng ẩn danh', // Replace with actual user data
+          createdDate: new Date().toISOString()
+        };
+        
+        await newsService.addComment(comment);
+        comments.value.unshift(comment);
+        newComment.value = '';
+      } catch (err) {
+        console.error('Error submitting comment:', err);
+      }
+    };
+
+    const shareArticle = async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: news.value.title,
+            text: news.value.subtitle,
+            url: window.location.href
+          });
+        } catch (err) {
+          console.error('Error sharing:', err);
+        }
+      } else {
+        // Fallback: copy to clipboard
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          alert('Đã sao chép link bài viết vào clipboard!');
+        } catch (err) {
+          console.error('Error copying to clipboard:', err);
+        }
+      }
+    };
+
+    const subscribeNewsletter = async () => {
+      if (!isValidEmail(email.value)) return;
+      
+      try {
+        await newsService.subscribeNewsletter(email.value);
+        alert('Đăng ký thành công!');
+        email.value = '';
+      } catch (err) {
+        console.error('Error subscribing:', err);
+        alert('Có lỗi xảy ra, vui lòng thử lại!');
+      }
+    };
+
+    const isValidEmail = (email) => {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    };
+
+    const formatDate = (dateStr) => {
       if (!dateStr) return "";
       const d = new Date(dateStr);
       return d.toLocaleDateString("vi-VN", {
@@ -274,9 +459,57 @@ export default {
         month: 'long',
         day: 'numeric'
       });
-    }
+    };
 
-    return { news, formatDate };
+    const formatCount = (count) => {
+      if (count >= 1000000) {
+        return Math.floor(count / 1000000) + 'M';
+      } else if (count >= 1000) {
+        return Math.floor(count / 1000) + 'K';
+      }
+      return count.toString();
+    };
+
+    const handleImageError = (event) => {
+      event.target.src = 'https://placehold.co/800x400?text=Hình+ảnh+không+tồn+tại';
+    };
+
+    const handleAdError = (event) => {
+      event.target.src = 'https://placehold.co/800x200?text=Quảng+cáo';
+    };
+
+    // Watch for route changes
+    watch(
+      () => route.params.newsId,
+      (newId) => {
+        if (newId) {
+          fetchDetail();
+        }
+      }
+    );
+
+    onMounted(() => {
+      fetchDetail();
+      fetchHotNews();
+      fetchSuggestNews();
+    });
+
+    return { 
+      news, 
+      hotNews, 
+      suggestNews, 
+      comments,
+      newComment,
+      email,
+      formatDate, 
+      formatCount,
+      submitComment,
+      shareArticle,
+      subscribeNewsletter,
+      isValidEmail,
+      handleImageError,
+      handleAdError
+    };
   },
 };
 </script>
@@ -290,6 +523,13 @@ export default {
 
 .article-content p {
   margin-bottom: 1.5rem;
+}
+
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem 0;
 }
 
 .card {
@@ -308,13 +548,36 @@ export default {
   transform: translateY(-1px);
 }
 
-.list-group-item:hover {
+.btn:disabled {
+  transform: none;
+  opacity: 0.6;
+}
+
+.hot-news-item:hover {
   background-color: #f8f9fa !important;
+  transition: background-color 0.2s ease;
+}
+
+.hot-news-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Gradient backgrounds */
 .bg-gradient {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Improved tag styling */
+.badge {
+  transition: all 0.2s ease;
+}
+
+.badge:hover {
+  transform: scale(1.05);
 }
 
 /* Responsive adjustments */
@@ -331,9 +594,27 @@ export default {
   .card-body.p-5 {
     padding: 2rem !important;
   }
+  
+  .col-xl-1, .col-xl-8, .col-xl-3 {
+    order: 2;
+  }
+  
+  .col-xl-8 {
+    order: 1;
+  }
 }
 
-/* Custom scrollbar for better UX */
+/* Loading animations */
+.spinner-border {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -350,5 +631,26 @@ export default {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Accessibility improvements */
+.btn:focus,
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Print styles */
+@media print {
+  .sticky-top,
+  .card-header,
+  .btn,
+  .badge {
+    display: none !important;
+  }
+  
+  .card {
+    border: none !important;
+    box-shadow: none !important;
+  }
 }
 </style>

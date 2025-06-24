@@ -1,18 +1,15 @@
 import axios from 'axios'
 
-// Lấy base URL từ environment variables
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
-// Tạo axios instance với config mặc định
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000, // 10 seconds timeout
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   }
 })
 
-// Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
     if (import.meta.env.VITE_DEBUG_MODE === 'true') {
@@ -25,7 +22,6 @@ apiClient.interceptors.request.use(
   }
 )
 
-// Response interceptor
 apiClient.interceptors.response.use(
   (response) => {
     return response

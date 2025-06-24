@@ -62,7 +62,7 @@
                       <div class="col-md-4">
                         <div class="position-relative overflow-hidden rounded">
                           <img
-                            :src="news.thumbnail ? `/Test/img/${news.thumbnail}` : 'https://placehold.co/400x250'"
+                            :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/400x250'"
                             class="img-fluid w-100 news-thumbnail"
                             :alt="news.title"
                             style="height: 180px; object-fit: cover;"
@@ -170,7 +170,7 @@
                   <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
                     <div class="flex-shrink-0 me-3">
                       <img 
-                        :src="news.thumbnail ? `/Test/img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
+                        :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
                         alt="thumbnail" 
                         class="rounded"
                         style="width: 60px; height: 60px; object-fit: cover;"
@@ -192,14 +192,47 @@
             </div>
           </div>
 
-          <!-- Recommend Section -->
+          <!-- Suggest Section -->
           <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body text-center py-4">
-              <div class="bg-success text-white rounded p-4 mb-3">
-                <i class="bi bi-lightbulb display-4 mb-2"></i>
-                <h6 class="mb-0 fw-bold">GỢI Ý DÀNH CHO BẠN</h6>
+            <div class="card-header bg-success text-white py-3">
+              <h6 class="mb-0 fw-bold">
+                Gợi ý cho bạn
+              </h6>
+            </div>
+            <div class="card-body p-0">
+              <div v-if="hotNews.length === 0" class="text-center py-4">
+                <i class="bi bi-newspaper display-4 text-muted"></i>
+                <p class="text-muted mt-2">Chưa có gợi ý cho bạn</p>
               </div>
-              <p class="text-muted small">Khám phá những bài viết thú vị được chọn lọc</p>
+              <div v-else>
+                <RouterLink
+                  v-for="(news, index) in suggestNews.slice(0, 5)"
+                  :key="news.newsId"
+                  :to="`/detail/${news.newsId}`"
+                  class="text-decoration-none"
+                >
+                  <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
+                    <div class="flex-shrink-0 me-3">
+                      <img 
+                        :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
+                        alt="thumbnail" 
+                        class="rounded"
+                        style="width: 60px; height: 60px; object-fit: cover;"
+                      >
+                      <div class="position-absolute top-0 start-0 translate-middle">
+                        <span class="badge bg-danger rounded-pill">{{ index + 1 }}</span>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 position-relative">
+                      <h6 class="mb-1 fw-semibold text-dark hot-news-title">{{ news.title }}</h6>
+                      <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>
+                        {{ formatDate(news.createdDate) }}
+                      </small>
+                    </div>
+                  </div>
+                </RouterLink>
+              </div>
             </div>
           </div>
 
@@ -224,7 +257,7 @@
     <!-- Floating Chat Button -->
     <div class="position-fixed bottom-0 end-0 p-4" style="z-index: 1050;">
       <button class="btn btn-primary rounded-circle shadow-lg chat-btn" data-bs-toggle="tooltip" data-bs-placement="left" title="Trò chuyện">
-        <i class="bi bi-chat-dots fs-4"></i>
+        <i class="fa-solid fa-comment"></i>
       </button>
     </div>
   </div>
@@ -238,6 +271,7 @@ export default {
   setup() {
     const newsList = ref([])
     const hotNews = ref([])
+    const suggestNews = ref([])
     const isLoading = ref(false)
     const error = ref(null)
     const currentPage = ref(0)
@@ -264,6 +298,15 @@ export default {
       try {
         const data = await newsService.getHotNews()
         hotNews.value = data
+      } catch (err) {
+        console.error('Error fetching hot news:', err)
+      }
+    }
+
+    const fetchSuggestNews = async () => {
+      try {
+        const data = await newsService.getSuggestNews()
+        suggestNews.value = data
       } catch (err) {
         console.error('Error fetching hot news:', err)
       }
@@ -300,11 +343,13 @@ export default {
     onMounted(() => {
       fetchNews()
       fetchHotNews()
+      fetchSuggestNews()
     })
 
     return {
       newsList,
       hotNews,
+      suggestNews,
       isLoading,
       error,
       currentPage,
@@ -350,7 +395,6 @@ export default {
   line-height: 1.5;
 }
 
-/* Hot news hover effects */
 .hot-news-item {
   transition: all 0.3s ease;
   cursor: pointer;
