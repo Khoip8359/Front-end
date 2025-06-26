@@ -270,6 +270,9 @@ import { newsService } from '../services/NewsService.js'
 
 export default {
   setup() {
+    const route = useRoute()
+    const keyword = ref(route.query.keyword || '')
+    const categoryId = ref(Number(route.params.categoryId))
     const newsList = ref([])
     const hotNews = ref([])
     const suggestNews = ref([])
@@ -277,9 +280,6 @@ export default {
     const error = ref(null)
     const currentPage = ref(0)
     const totalPages = ref(1)
-
-    const route = useRoute()
-    const categoryId = ref(Number(route.params.categoryId))
 
     const fetchCategory = async (page = 0) => {
       isLoading.value = true
@@ -302,7 +302,7 @@ export default {
       () => route.params.categoryId,
       (newVal) => {
         categoryId.value = Number(newVal)
-        if (!isNaN(categoryId.value)) {
+        if (!isNaN(categoryId.value) && !keyword.value) {
           fetchCategory(0)
         }
       },
@@ -329,7 +329,8 @@ export default {
 
     const goToPage = (page) => {
       if (page >= 0 && page < totalPages.value) {
-        fetchCategory(page)
+        if (keyword.value) fetchSearchResult(page)
+        else fetchCategory(page)
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     }
@@ -357,6 +358,29 @@ export default {
     onMounted(() => {
       fetchHotNews()
       fetchSuggestNews()
+      if (keyword.value) fetchSearchResult(0)
+      else fetchCategory(0)
+    })
+
+    const fetchSearchResult = async (page = 0) => {
+      isLoading.value = true
+      error.value = null
+      try {
+        const data = await newsService.searchNews(keyword.value, page)
+        newsList.value = data.content
+        totalPages.value = data.totalPages
+        currentPage.value = data.number
+      } catch (err) {
+        error.value = 'Không thể tìm kiếm tin tức.'
+      } finally {
+        isLoading.value = false
+      }
+    }
+
+    watch(() => route.query.keyword, (newKeyword) => {
+      keyword.value = newKeyword
+      if (keyword.value) fetchSearchResult(0)
+      else fetchCategory(0)
     })
 
     return {

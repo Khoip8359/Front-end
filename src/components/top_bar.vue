@@ -62,12 +62,14 @@
         <div class="col-lg-6 col-md-4 col-sm-6 px-3">
           <div class="input-group shadow-sm">
             <input 
+              v-model="searchQuery"
+              @keyup.enter="onSearch"
               type="text" 
               class="form-control form-control-lg border-end-0 rounded-start-pill ps-4" 
               placeholder="Tìm kiếm bài viết, tin tức..." 
               style="border-color: #dee2e6;"
             />
-            <button class="btn btn-primary rounded-end-pill px-4 shadow-sm">
+            <button @click="onSearch" class="btn btn-primary rounded-end-pill px-4 shadow-sm">
               🔍
             </button>
           </div>
@@ -135,8 +137,12 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
+// Router & tìm kiếm
+const router = useRouter()
+const searchQuery = ref('')
 // Categories data
 const categories = ref([])
 
@@ -144,6 +150,14 @@ const categories = ref([])
 const currentDate = ref('')
 const currentTime = ref('')
 let timeInterval = null
+
+// Gửi truy vấn tìm kiếm
+const onSearch = () => {
+  const keyword = searchQuery.value.trim()
+  if (keyword !== '') {
+    router.push({ path: '/category/0', query: { keyword } })
+  }
+}
 
 // Fetch categories
 onMounted(async () => {
