@@ -53,5 +53,16 @@ export const newsService = {
       console.error('getHotNews error:', error)
       return []
     }
+  },
+  async searchNews(keyword, page = 0, size = 5) {
+    try {
+      const response = await apiClient.get('/api/news/search', {
+       params: { keyword, page, size }
+      })
+      return response.data
+    } catch (error) {
+      console.error('searchNews error:', error)
+      throw new Error('Không thể tìm kiếm tin tức')
+    }
   }
 }
