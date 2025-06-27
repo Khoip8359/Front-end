@@ -461,6 +461,37 @@ export default {
   .news-title {
     font-size: 1.1rem;
   }
+  
+  .news-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .card-body {
+    padding: 1rem !important;
+  }
+  
+  .news-thumbnail {
+    height: 150px !important;
+  }
+  
+  .chat-btn {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 576px) {
+  .news-title {
+    font-size: 1rem;
+  }
+  
+  .card-body {
+    padding: 0.75rem !important;
+  }
+  
+  .news-thumbnail {
+    height: 120px !important;
+  }
 }
 
 /* Loading animation */

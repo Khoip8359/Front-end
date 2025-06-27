@@ -16,7 +16,7 @@ export const newsService = {
   async getHotNews() {
     try {
       const response = await apiClient.get('/api/hotNews')
-      return response.data
+      return response.data || []
     } catch (error) {
       console.error('getHotNews error:', error)
       return []
@@ -48,12 +48,13 @@ export const newsService = {
   async getSuggestNews() {
     try {
       const response = await apiClient.get('/api/suggestNews')
-      return response.data
+      return response.data || []
     } catch (error) {
-      console.error('getHotNews error:', error)
+      console.error('getSuggestNews error:', error)
       return []
     }
   },
+  
   async searchNews(keyword, page = 0, size = 5) {
     try {
       const response = await apiClient.get('/api/news/search', {
@@ -63,6 +64,16 @@ export const newsService = {
     } catch (error) {
       console.error('searchNews error:', error)
       throw new Error('Không thể tìm kiếm tin tức')
+    }
+  },
+
+  async getCategories() {
+    try {
+      const response = await apiClient.get('/api/categories')
+      return response.data
+    } catch (error) {
+      console.error('getCategories error:', error)
+      throw new Error('Không thể tải danh mục')
     }
   }
 }
