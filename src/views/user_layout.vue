@@ -7,17 +7,17 @@
     <RouterView></RouterView>
     
     <!-- Footer -->
-    <foter></foter>
+    <Footer></Footer>
   </div>
 </template>
 
 <script>
-import foter from '@/components/footer.vue';
+import Footer from '@/components/footer.vue';
 import top_bar from '@/components/top_bar.vue';
 
 export default {
   components: {
-    foter,
+    Footer,
     top_bar
   },
 };
@@ -25,7 +25,6 @@ export default {
 
 <style scoped>
 
-/* Container bố trí theo flex column, cao tối thiểu 100vh */
 .page-container {
   min-height: 100vh;
   display: flex;

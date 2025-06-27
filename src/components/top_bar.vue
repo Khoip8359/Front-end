@@ -82,8 +82,7 @@
               to="/login" 
               class="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold shadow-sm"
             >
-              <i class="bi bi-person-circle me-1"></i>
-              <span class="d-none d-lg-inline">Đăng nhập</span>
+              <i class="bi bi-person-circle me-1"></i>Đăng nhập
             </RouterLink>
           </div>
         </div>
@@ -138,7 +137,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { newsService } from '@/services/NewsService.js'
 
 // Router & tìm kiếm
 const router = useRouter()
@@ -162,8 +161,7 @@ const onSearch = () => {
 // Fetch categories
 onMounted(async () => {
   try {
-    const res = await axios.get('http://localhost:8080/api/categories')
-    categories.value = res.data
+    categories.value = await newsService.getCategories()
   } catch (error) {
     console.error('Lấy danh mục thất bại:', error)
   }
