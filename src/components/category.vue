@@ -62,7 +62,7 @@
                       <div class="col-md-4">
                         <div class="position-relative overflow-hidden rounded">
                           <img
-                            :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/400x250'"
+                            :src="news.thumbnail ? `/img/${news.thumbnail}` : 'https://placehold.co/400x250'"
                             class="img-fluid w-100 news-thumbnail"
                             :alt="news.title"
                             style="height: 180px; object-fit: cover;"
@@ -170,7 +170,7 @@
                   <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
                     <div class="flex-shrink-0 me-3">
                       <img 
-                        :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
+                        :src="news.thumbnail ? `/img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
                         alt="thumbnail" 
                         class="rounded"
                         style="width: 60px; height: 60px; object-fit: cover;"
@@ -214,7 +214,7 @@
                   <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
                     <div class="flex-shrink-0 me-3">
                       <img 
-                        :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
+                        :src="news.thumbnail ? `/img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
                         alt="thumbnail" 
                         class="rounded"
                         style="width: 60px; height: 60px; object-fit: cover;"
@@ -264,11 +264,15 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { newsService } from '../services/NewsService.js'
 
 export default {
   setup() {
+    const route = useRoute()
+    const keyword = ref(route.query.keyword || '')
+    const categoryId = ref(Number(route.params.categoryId))
     const newsList = ref([])
     const hotNews = ref([])
     const suggestNews = ref([])
@@ -277,12 +281,12 @@ export default {
     const currentPage = ref(0)
     const totalPages = ref(1)
 
-    const fetchNews = async (page = 0) => {
+    const fetchCategory = async (page = 0) => {
       isLoading.value = true
       error.value = null
-      
       try {
-        const data = await newsService.getNews(page)
+        console.log('Fetching category:', categoryId.value)
+        const data = await newsService.getNewsByCategory(categoryId.value, page)
         newsList.value = data.content
         totalPages.value = data.totalPages
         currentPage.value = data.number
@@ -293,6 +297,17 @@ export default {
         isLoading.value = false
       }
     }
+
+    watch(
+      () => route.params.categoryId,
+      (newVal) => {
+        categoryId.value = Number(newVal)
+        if (!isNaN(categoryId.value) && !keyword.value) {
+          fetchCategory(0)
+        }
+      },
+      { immediate: true }
+    )
 
     const fetchHotNews = async () => {
       try {
@@ -311,10 +326,11 @@ export default {
         console.error('Error fetching hot news:', err)
       }
     }
-    
+
     const goToPage = (page) => {
       if (page >= 0 && page < totalPages.value) {
-        fetchNews(page)
+        if (keyword.value) fetchSearchResult(page)
+        else fetchCategory(page)
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     }
@@ -333,7 +349,6 @@ export default {
       const pages = []
       const start = Math.max(1, currentPage.value - 1)
       const end = Math.min(totalPages.value, currentPage.value + 3)
-      
       for (let i = start; i <= end; i++) {
         pages.push(i)
       }
@@ -341,9 +356,31 @@ export default {
     })
 
     onMounted(() => {
-      fetchNews()
       fetchHotNews()
       fetchSuggestNews()
+      if (keyword.value) fetchSearchResult(0)
+      else fetchCategory(0)
+    })
+
+    const fetchSearchResult = async (page = 0) => {
+      isLoading.value = true
+      error.value = null
+      try {
+        const data = await newsService.searchNews(keyword.value, page)
+        newsList.value = data.content
+        totalPages.value = data.totalPages
+        currentPage.value = data.number
+      } catch (err) {
+        error.value = 'Không thể tìm kiếm tin tức.'
+      } finally {
+        isLoading.value = false
+      }
+    }
+
+    watch(() => route.query.keyword, (newKeyword) => {
+      keyword.value = newKeyword
+      if (keyword.value) fetchSearchResult(0)
+      else fetchCategory(0)
     })
 
     return {
@@ -363,7 +400,6 @@ export default {
 </script>
 
 <style scoped>
-/* News item hover effects */
 .news-item {
   transition: all 0.3s ease;
 }
@@ -394,7 +430,6 @@ export default {
   overflow: hidden;
   line-height: 1.5;
 }
-
 .hot-news-item {
   transition: all 0.3s ease;
   cursor: pointer;
@@ -411,8 +446,6 @@ export default {
   overflow: hidden;
   line-height: 1.3;
 }
-
-/* Chat button */
 .chat-btn {
   width: 60px;
   height: 60px;
@@ -460,37 +493,6 @@ export default {
 @media (max-width: 768px) {
   .news-title {
     font-size: 1.1rem;
-  }
-  
-  .news-subtitle {
-    font-size: 0.9rem;
-  }
-  
-  .card-body {
-    padding: 1rem !important;
-  }
-  
-  .news-thumbnail {
-    height: 150px !important;
-  }
-  
-  .chat-btn {
-    width: 50px;
-    height: 50px;
-  }
-}
-
-@media (max-width: 576px) {
-  .news-title {
-    font-size: 1rem;
-  }
-  
-  .card-body {
-    padding: 0.75rem !important;
-  }
-  
-  .news-thumbnail {
-    height: 120px !important;
   }
 }
 
