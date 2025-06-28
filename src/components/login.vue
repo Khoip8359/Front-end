@@ -1,323 +1,228 @@
 <template>
-  <div id="app" class="vh-100 d-flex justify-content-center align-items-center bg-gradient">
-    <div class="card auth-card p-4 shadow-lg">
-      <!-- Navigation Tabs -->
-      <ul class="nav nav-tabs mb-4">
-        <li class="nav-item">
-          <button 
-            class="nav-link" 
-            :class="{ active: activeTab === 'login' }"
-            @click="setActiveTab('login')"
-            type="button"
-          >
-            <i class="fas fa-sign-in-alt me-2"></i>Đăng Nhập
-          </button>
-        </li>
-        <li class="nav-item">
-          <button 
-            class="nav-link" 
-            :class="{ active: activeTab === 'register' }"
-            @click="setActiveTab('register')"
-            type="button"
-          >
-            <i class="fas fa-user-plus me-2"></i>Đăng Ký
-          </button>
-        </li>
-      </ul>
+  <div class="login-container">
+    <!-- Background Animation -->
+    <div class="background-animation">
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+      </div>
+    </div>
+
+    <!-- Main Login Card -->
+    <div class="login-card">
+      <!-- Header -->
+      <div class="login-header">
+        <div class="logo-container">
+          <div class="logo-icon">
+            <i class="bi bi-newspaper"></i>
+          </div>
+          <h1 class="logo-text">GaNews</h1>
+        </div>
+        <p class="welcome-text">Chào mừng bạn trở lại!</p>
+      </div>
 
       <!-- Login Form -->
-      <div v-if="activeTab === 'login'" class="auth-container">
-        <div class="text-center mb-4">
-          <div class="logo-circle mx-auto mb-3">
-            <i class="fas fa-user-circle fa-3x text-primary"></i>
-          </div>
-          <h3 class="text-dark mb-2">Đăng Nhập</h3>
-          <p class="text-muted">Chào mừng bạn trở lại!</p>
-        </div>
-        
-        <form @submit.prevent="handleLogin">
-          <div class="mb-3">
-            <label for="loginEmail" class="form-label">
-              <i class="fas fa-envelope me-2"></i>Email
-            </label>
-            <input
-              type="email"
-              id="loginEmail"
-              v-model="loginForm.email"
-              class="form-control"
-              :class="{ 'is-invalid': loginErrors.email, 'is-valid': loginForm.email && !loginErrors.email }"
-              placeholder="Nhập địa chỉ email của bạn"
-              required
-            />
-            <div v-if="loginErrors.email" class="invalid-feedback">
-              {{ loginErrors.email }}
+      <form @submit.prevent="handleLogin" class="login-form">
+        <!-- Username Field -->
+        <div class="form-group">
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <i class="bi bi-person"></i>
             </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="loginPassword" class="form-label">
-              <i class="fas fa-lock me-2"></i>Mật khẩu
-            </label>
-            <div class="input-group">
-              <input
-                :type="showLoginPassword ? 'text' : 'password'"
-                id="loginPassword"
-                v-model="loginForm.password"
-                class="form-control"
-                :class="{ 'is-invalid': loginErrors.password, 'is-valid': loginForm.password && !loginErrors.password }"
-                placeholder="Nhập mật khẩu của bạn"
-                required
-              />
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                @click="showLoginPassword = !showLoginPassword"
-              >
-                <i :class="showLoginPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-              </button>
-            </div>
-            <div v-if="loginErrors.password" class="invalid-feedback">
-              {{ loginErrors.password }}
-            </div>
-          </div>
-
-          <div class="mb-3 form-check d-flex justify-content-between align-items-center">
-            <div>
-              <input
-                type="checkbox"
-                id="rememberMe"
-                v-model="loginForm.rememberMe"
-                class="form-check-input"
-              />
-              <label for="rememberMe" class="form-check-label">
-                Ghi nhớ đăng nhập
-              </label>
-            </div>
-            <a href="#" class="text-decoration-none" @click.prevent="showForgotPasswordModal = true">
-              Quên mật khẩu?
-            </a>
-          </div>
-
-          <button type="submit" class="btn btn-primary w-100 mb-3" :disabled="loginLoading">
-            <span 
-              v-if="loginLoading" 
-              class="spinner-border spinner-border-sm me-2" 
-              role="status"
-            ></span>
-            <span>{{ loginLoading ? 'Đang xử lý...' : 'Đăng Nhập' }}</span>
-          </button>
-        </form>
-      </div>
-
-      <!-- Register Form -->
-      <div v-if="activeTab === 'register'" class="auth-container">
-        <div class="text-center mb-4">
-          <div class="logo-circle mx-auto mb-3">
-            <i class="fas fa-user-plus fa-3x text-primary"></i>
-          </div>
-          <h3 class="text-dark mb-2">Đăng Ký</h3>
-          <p class="text-muted">Tạo tài khoản mới</p>
-        </div>
-        
-        <form @submit.prevent="handleRegister">
-          <!-- Full Name -->
-          <div class="mb-3">
-            <label for="fullName" class="form-label">
-              <i class="fas fa-user me-2"></i>Họ và tên
-            </label>
             <input
               type="text"
-              id="fullName"
-              v-model="registerForm.fullName"
-              class="form-control"
-              :class="{ 'is-invalid': registerErrors.fullName, 'is-valid': registerForm.fullName && !registerErrors.fullName }"
-              placeholder="Nhập họ và tên"
+              v-model="loginForm.username"
+              class="form-input"
+              :class="{ 'error': loginErrors.username }"
+              placeholder="Tên đăng nhập"
               required
             />
-            <div v-if="registerErrors.fullName" class="invalid-feedback">
-              {{ registerErrors.fullName }}
-            </div>
+            <div class="input-line"></div>
           </div>
+          <div v-if="loginErrors.username" class="error-message">
+            <i class="bi bi-exclamation-circle"></i>
+            {{ loginErrors.username }}
+          </div>
+        </div>
 
-          <!-- Email -->
-          <div class="mb-3">
-            <label for="registerEmail" class="form-label">
-              <i class="fas fa-envelope me-2"></i>Email
-            </label>
+        <!-- Password Field -->
+        <div class="form-group">
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <i class="bi bi-lock"></i>
+            </div>
             <input
-              type="email"
-              id="registerEmail"
-              v-model="registerForm.email"
-              class="form-control"
-              :class="{ 'is-invalid': registerErrors.email, 'is-valid': registerForm.email && !registerErrors.email }"
-              placeholder="Nhập địa chỉ email"
+              :type="showPassword ? 'text' : 'password'"
+              v-model="loginForm.password"
+              class="form-input"
+              :class="{ 'error': loginErrors.password }"
+              placeholder="Mật khẩu"
               required
             />
-            <div v-if="registerErrors.email" class="invalid-feedback">
-              {{ registerErrors.email }}
-            </div>
+            <button
+              type="button"
+              class="password-toggle"
+              @click="showPassword = !showPassword"
+            >
+              <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+            <div class="input-line"></div>
           </div>
+          <div v-if="loginErrors.password" class="error-message">
+            <i class="bi bi-exclamation-circle"></i>
+            {{ loginErrors.password }}
+          </div>
+        </div>
 
-          <!-- Phone -->
-          <div class="mb-3">
-            <label for="phone" class="form-label">
-              <i class="fas fa-phone me-2"></i>Số điện thoại
-            </label>
+        <!-- Remember Me & Forgot Password -->
+        <div class="form-options">
+          <label class="checkbox-wrapper">
             <input
-              type="tel"
-              id="phone"
-              v-model="registerForm.phone"
-              class="form-control"
-              :class="{ 'is-invalid': registerErrors.phone, 'is-valid': registerForm.phone && !registerErrors.phone }"
-              placeholder="Nhập số điện thoại"
-              required
+              type="checkbox"
+              v-model="loginForm.rememberMe"
+              class="checkbox-input"
             />
-            <div v-if="registerErrors.phone" class="invalid-feedback">
-              {{ registerErrors.phone }}
-            </div>
-          </div>
-
-          <!-- Password -->
-          <div class="mb-3">
-            <label for="registerPassword" class="form-label">
-              <i class="fas fa-lock me-2"></i>Mật khẩu
-            </label>
-            <div class="input-group">
-              <input
-                :type="showRegisterPassword ? 'text' : 'password'"
-                id="registerPassword"
-                v-model="registerForm.password"
-                class="form-control"
-                :class="{ 'is-invalid': registerErrors.password, 'is-valid': registerForm.password && !registerErrors.password }"
-                placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
-                required
-              />
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                @click="showRegisterPassword = !showRegisterPassword"
-              >
-                <i :class="showRegisterPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-              </button>
-            </div>
-            <div v-if="registerErrors.password" class="invalid-feedback">
-              {{ registerErrors.password }}
-            </div>
-          </div>
-
-          <!-- Confirm Password -->
-          <div class="mb-3">
-            <label for="confirmPassword" class="form-label">
-              <i class="fas fa-lock me-2"></i>Xác nhận mật khẩu
-            </label>
-            <div class="input-group">
-              <input
-                :type="showConfirmPassword ? 'text' : 'password'"
-                id="confirmPassword"
-                v-model="registerForm.confirmPassword"
-                class="form-control"
-                :class="{ 'is-invalid': registerErrors.confirmPassword, 'is-valid': registerForm.confirmPassword && !registerErrors.confirmPassword }"
-                placeholder="Nhập lại mật khẩu"
-                required
-              />
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                @click="showConfirmPassword = !showConfirmPassword"
-              >
-                <i :class="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-              </button>
-            </div>
-            <div v-if="registerErrors.confirmPassword" class="invalid-feedback">
-              {{ registerErrors.confirmPassword }}
-            </div>
-          </div>
-
-          <!-- Terms Agreement -->
-          <div class="mb-3">
-            <div class="form-check">
-              <input
-                type="checkbox"
-                id="agreeTerms"
-                v-model="registerForm.agreeTerms"
-                class="form-check-input"
-                required
-              />
-              <label for="agreeTerms" class="form-check-label">
-                Tôi đồng ý với <a href="#" class="text-decoration-none">điều khoản sử dụng</a>
-              </label>
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-primary w-100 mb-3" :disabled="registerLoading">
-            <span 
-              v-if="registerLoading" 
-              class="spinner-border spinner-border-sm me-2" 
-              role="status"
-            ></span>
-            <span>{{ registerLoading ? 'Đang xử lý...' : 'Đăng Ký' }}</span>
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">Ghi nhớ đăng nhập</span>
+          </label>
+          <button type="button" class="forgot-link" @click="showForgotModal = true">
+            Quên mật khẩu?
           </button>
-        </form>
-      </div>
+        </div>
 
-      <!-- Alert Messages -->
-      <div v-if="alertMessage" id="alertContainer">
-        <div 
-          class="alert mt-3" 
-          :class="alertType === 'success' ? 'alert-success' : 'alert-danger'" 
-          role="alert"
-        >
-          <i 
-            :class="alertType === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle'" 
-            class="me-2"
-          ></i>
-          {{ alertMessage }}
+        <!-- Login Button -->
+        <button type="submit" class="login-button" :disabled="userStore.isLoading">
+          <div class="button-content">
+            <div v-if="userStore.isLoading" class="loading-spinner"></div>
+            <span>{{ userStore.isLoading ? 'Đang đăng nhập...' : 'Đăng nhập' }}</span>
+          </div>
+        </button>
+
+        <!-- Divider -->
+        <div class="divider">
+          <span>hoặc</span>
+        </div>
+
+        <!-- Social Login -->
+        <div class="social-login">
+          <button type="button" class="social-button google">
+            <i class="bi bi-google"></i>
+            <span>Google</span>
+          </button>
+          <button type="button" class="social-button facebook">
+            <i class="bi bi-facebook"></i>
+            <span>Facebook</span>
+          </button>
+        </div>
+
+        <!-- Register Link -->
+        <div class="register-link">
+          <span>Chưa có tài khoản?</span>
+          <button type="button" class="register-button" @click="showRegisterModal = true">
+            Đăng ký ngay
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div v-if="message" class="message-toast" :class="messageType">
+      <i :class="messageType === 'success' ? 'bi bi-check-circle' : 'bi bi-exclamation-circle'"></i>
+      <span>{{ message }}</span>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div v-if="showForgotModal" class="modal-overlay" @click="showForgotModal = false">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3>Quên mật khẩu</h3>
+          <button class="modal-close" @click="showForgotModal = false">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Nhập email của bạn để nhận link đặt lại mật khẩu</p>
+          <input
+            type="email"
+            v-model="forgotEmail"
+            class="form-input"
+            placeholder="Nhập email"
+          />
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" @click="showForgotModal = false">Hủy</button>
+          <button class="btn-primary" @click="handleForgotPassword">Gửi</button>
         </div>
       </div>
     </div>
 
-    <!-- Forgot Password Modal -->
-    <div 
-      v-if="showForgotPasswordModal" 
-      class="modal fade show d-block" 
-      tabindex="-1" 
-      style="background-color: rgba(0,0,0,0.5)"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Quên Mật Khẩu</h5>
-            <button 
-              type="button" 
-              class="btn-close" 
-              @click="showForgotPasswordModal = false"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <p class="text-muted">Nhập email của bạn để nhận link đặt lại mật khẩu</p>
+    <!-- Register Modal -->
+    <div v-if="showRegisterModal" class="modal-overlay" @click="showRegisterModal = false">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3>Đăng ký tài khoản</h3>
+          <button class="modal-close" @click="showRegisterModal = false">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
             <input
-              type="email"
-              v-model="forgotPasswordEmail"
-              class="form-control"
-              placeholder="Nhập địa chỉ email"
+              type="text"
+              v-model="registerForm.username"
+              class="form-input"
+              placeholder="Tên đăng nhập"
             />
           </div>
-          <div class="modal-footer">
-            <button 
-              type="button" 
-              class="btn btn-secondary" 
-              @click="showForgotPasswordModal = false"
-            >
-              Hủy
-            </button>
-            <button 
-              type="button" 
-              class="btn btn-primary" 
-              @click="handleForgotPassword"
-            >
-              Gửi Link
-            </button>
+          <div class="form-group">
+            <input
+              type="text"
+              v-model="registerForm.name"
+              class="form-input"
+              placeholder="Họ và tên"
+            />
           </div>
+          <div class="form-group">
+            <input
+              type="email"
+              v-model="registerForm.email"
+              class="form-input"
+              placeholder="Email"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="tel"
+              v-model="registerForm.phone"
+              class="form-input"
+              placeholder="Số điện thoại"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              v-model="registerForm.password"
+              class="form-input"
+              placeholder="Mật khẩu"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              v-model="registerForm.confirmPassword"
+              class="form-input"
+              placeholder="Xác nhận mật khẩu"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" @click="showRegisterModal = false">Hủy</button>
+          <button class="btn-primary" @click="handleRegister" :disabled="!isRegisterFormValid || userStore.isLoading">
+            {{ userStore.isLoading ? 'Đang đăng ký...' : 'Đăng ký' }}
+          </button>
         </div>
       </div>
     </div>
@@ -325,412 +230,760 @@
 </template>
 
 <script>
-import { useUserStore } from '@/stores/user' // 🔁 sửa đúng path theo cấu trúc project của bạn
+import { useUserStore } from '@/stores/user.js'
 
 export default {
-  name: 'AuthSystem',
+  name: 'LoginPage',
   data() {
     return {
-      activeTab: 'login',
-      
-      // Loading states
-      loginLoading: false,
-      registerLoading: false,
-      
-      // Password visibility
-      showLoginPassword: false,
-      showRegisterPassword: false,
-      showConfirmPassword: false,
-      
-      // Login form
       loginForm: {
-        email: '',
+        username: '',
         password: '',
         rememberMe: false
       },
-      
-      // Register form
       registerForm: {
-        fullName: '',
+        username: '',
+        name: '',
         email: '',
         phone: '',
         password: '',
-        confirmPassword: '',
-        agreeTerms: false
+        confirmPassword: ''
       },
-      
-      // Validation errors
-      loginErrors: {},
       registerErrors: {},
-      
-      // Alert system
-      alertMessage: '',
-      alertType: 'success',
-      
-      // Forgot password
-      showForgotPasswordModal: false,
-      forgotPasswordEmail: '',
-      
-      // Demo accounts
-      demoAccounts: [
-        { email: "admin@example.com", password: "admin123", role: "admin", name: "Administrator" },
-        { email: "user@example.com", password: "123456", role: "user", name: "User Demo" },
-        { email: "demo@example.com", password: "demo123", role: "demo", name: "Demo User" }
-      ],
-      
-      // Registered users
-      registeredUsers: [],
-      existingEmails: ["admin@example.com", "user@example.com", "demo@example.com"]
+      loginErrors: {},
+      showPassword: false,
+      isLoading: false,
+      message: '',
+      messageType: 'success',
+      showForgotModal: false,
+      showRegisterModal: false,
+      forgotEmail: ''
     }
   },
-  
-  mounted() {
-    // Initialize registered users with demo accounts
-    this.registeredUsers = [...this.demoAccounts];
-    
-    // Load remembered email
-    const rememberedEmail = localStorage.getItem('rememberedEmail');
-    if (rememberedEmail) {
-      this.loginForm.email = rememberedEmail;
-      this.loginForm.rememberMe = true;
+  computed: {
+    userStore() {
+      return useUserStore();
+    },
+    isRegisterFormValid() {
+      return this.registerForm.username && 
+             this.registerForm.name && 
+             this.registerForm.email && 
+             this.registerForm.phone && 
+             this.registerForm.password && 
+             this.registerForm.confirmPassword &&
+             this.registerForm.password === this.registerForm.confirmPassword &&
+             this.registerForm.username.length >= 3 &&
+             this.registerForm.password.length >= 6
     }
-    
-    // Show demo info after a delay
-    setTimeout(() => {
-      if (this.activeTab === 'login') {
-        this.showAlert('Demo: admin@example.com / admin123 hoặc user@example.com / 123456', 'success');
-      }
-    }, 1000);
   },
-  
   methods: {
-    setActiveTab(tab) {
-      this.activeTab = tab;
+    async handleLogin() {
       this.clearErrors();
-      this.clearAlert();
+      
+      // Validate
+      if (!this.loginForm.username) {
+        this.loginErrors.username = 'Vui lòng nhập tên đăng nhập';
+        return;
+      }
+      if (!this.loginForm.password) {
+        this.loginErrors.password = 'Vui lòng nhập mật khẩu';
+        return;
+      }
+
+      try {
+        const userStore = useUserStore();
+        
+        // Gọi API đăng nhập thông qua Pinia store
+        await userStore.login({
+          username: this.loginForm.username,
+          password: this.loginForm.password
+        }, this.loginForm.rememberMe);
+
+        // Đăng nhập thành công
+        this.showMessage('Đăng nhập thành công!', 'success');
+        
+        // Chuyển hướng sau khi đăng nhập thành công
+        setTimeout(() => {
+          this.$router.push('/');
+        }, 2000);
+        
+      } catch (error) {
+        console.error('Login error:', error);
+        
+        // Xử lý lỗi từ API
+        if (error.response) {
+          const errorMessage = error.response.data?.message || 'Tên đăng nhập hoặc mật khẩu không đúng';
+          this.showMessage(errorMessage, 'error');
+        } else {
+          this.showMessage('Có lỗi xảy ra, vui lòng thử lại', 'error');
+        }
+      }
     },
-    
-    // Validation methods
-    validateEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
+
+    async handleRegister() {
+      // Kiểm tra các trường bắt buộc
+      if (!this.registerForm.username || !this.registerForm.name || !this.registerForm.email || 
+          !this.registerForm.phone || !this.registerForm.password || !this.registerForm.confirmPassword) {
+        this.showMessage('Vui lòng điền đầy đủ thông tin', 'error');
+        return;
+      }
+
+      // Kiểm tra độ dài username
+      if (this.registerForm.username.length < 3) {
+        this.showMessage('Tên đăng nhập phải có ít nhất 3 ký tự', 'error');
+        return;
+      }
+
+      // Kiểm tra định dạng email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(this.registerForm.email)) {
+        this.showMessage('Email không hợp lệ', 'error');
+        return;
+      }
+
+      // Kiểm tra định dạng số điện thoại
+      const phoneRegex = /^[0-9]{10,11}$/
+      if (!phoneRegex.test(this.registerForm.phone)) {
+        this.showMessage('Số điện thoại không hợp lệ (10-11 số)', 'error');
+        return;
+      }
+
+      // Kiểm tra độ dài mật khẩu
+      if (this.registerForm.password.length < 6) {
+        this.showMessage('Mật khẩu phải có ít nhất 6 ký tự', 'error');
+        return;
+      }
+
+      if (this.registerForm.password !== this.registerForm.confirmPassword) {
+        this.showMessage('Mật khẩu xác nhận không khớp', 'error');
+        return;
+      }
+
+      try {
+        const userStore = useUserStore();
+        
+        // Gọi API đăng ký thông qua Pinia store
+        await userStore.register({
+          username: this.registerForm.username,
+          password: this.registerForm.password,
+          confirmPassword: this.registerForm.confirmPassword,
+          name: this.registerForm.name,
+          email: this.registerForm.email,
+          phone: this.registerForm.phone
+        });
+        
+        this.showMessage('Đăng ký thành công!', 'success');
+        this.showRegisterModal = false;
+        this.clearRegisterForm();
+      } catch (error) {
+        console.error('Register error:', error);
+        
+        if (error.response) {
+          const errorMessage = error.response.data?.message || 'Có lỗi xảy ra khi đăng ký';
+          this.showMessage(errorMessage, 'error');
+        } else {
+          this.showMessage('Có lỗi xảy ra, vui lòng thử lại', 'error');
+        }
+      }
     },
-    
+
+    async handleForgotPassword() {
+      if (!this.forgotEmail) {
+        this.showMessage('Vui lòng nhập email', 'error');
+        return;
+      }
+
+      try {
+        const userStore = useUserStore();
+        
+        // Gọi API quên mật khẩu thông qua Pinia store
+        await userStore.forgotPassword(this.forgotEmail);
+        
+        this.showMessage(`Link đặt lại mật khẩu đã được gửi đến ${this.forgotEmail}`, 'success');
+        this.showForgotModal = false;
+        this.forgotEmail = '';
+      } catch (error) {
+        console.error('Forgot password error:', error);
+        
+        if (error.response) {
+          const errorMessage = error.response.data?.message || 'Có lỗi xảy ra khi gửi email';
+          this.showMessage(errorMessage, 'error');
+        } else {
+          this.showMessage('Có lỗi xảy ra, vui lòng thử lại', 'error');
+        }
+      }
+    },
+
     clearErrors() {
       this.loginErrors = {};
       this.registerErrors = {};
     },
-    
-    // Alert methods
-    showAlert(message, type = 'success') {
-      this.alertMessage = message;
-      this.alertType = type;
-      
+
+    clearRegisterForm() {
+      this.registerForm = { username: '', name: '', email: '', phone: '', password: '', confirmPassword: '' };
+      this.registerErrors = {};
+    },
+
+    showMessage(text, type = 'success') {
+      this.message = text;
+      this.messageType = type;
       setTimeout(() => {
-        this.clearAlert();
+        this.message = '';
       }, 5000);
-    },
-    
-    clearAlert() {
-      this.alertMessage = '';
-    },
-    
-    // Login handler
-    async handleLogin() {
-      const userStore = useUserStore();
-      this.clearErrors();
-      this.clearAlert();
-      
-      let isValid = true;
-      
-      // Validate email
-      if (!this.loginForm.email) {
-        this.loginErrors.email = 'Email là bắt buộc';
-        isValid = false;
-      } else if (!this.validateEmail(this.loginForm.email)) {
-        this.loginErrors.email = 'Email không đúng định dạng';
-        isValid = false;
-      }
-      
-      // Validate password
-      if (!this.loginForm.password) {
-        this.loginErrors.password = 'Mật khẩu là bắt buộc';
-        isValid = false;
-      }
-      
-      if (!isValid) return;
-      
-      this.loginLoading = true;
-      
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Check credentials
-        const user = this.registeredUsers.find(
-          account => account.email === this.loginForm.email && account.password === this.loginForm.password
-        );
-        
-        if (user) {
-           userStore.login(user.email, user.role, user.name);
-          this.showAlert(`Đăng nhập thành công! Chào mừng ${user.name}`, 'success');
-          
-          // Save login info if remember me is checked
-          if (this.loginForm.rememberMe) {
-            localStorage.setItem('rememberedEmail', this.loginForm.email);
-            localStorage.setItem('userRole', user.role);
-          }
-          
-          // Redirect simulation
-          setTimeout(() => {
-            this.$router.push('/');
-          }, 1500);
-          
-        } else {
-          this.showAlert('Email hoặc mật khẩu không chính xác. Thử: admin@example.com / admin123', 'error');
-        }
-        
-      } catch (error) {
-        this.showAlert('Có lỗi xảy ra. Vui lòng thử lại sau.', 'error');
-      } finally {
-        this.loginLoading = false;
-      }
-    },
-    
-    // Register handler
-    async handleRegister() {
-      this.clearErrors();
-      this.clearAlert();
-      
-      let isValid = true;
-      
-      // Validate full name
-      if (!this.registerForm.fullName.trim()) {
-        this.registerErrors.fullName = 'Họ và tên là bắt buộc';
-        isValid = false;
-      } else if (this.registerForm.fullName.trim().length < 2) {
-        this.registerErrors.fullName = 'Họ và tên phải có ít nhất 2 ký tự';
-        isValid = false;
-      }
-      
-      // Validate email
-      if (!this.registerForm.email) {
-        this.registerErrors.email = 'Email là bắt buộc';
-        isValid = false;
-      } else if (!this.validateEmail(this.registerForm.email)) {
-        this.registerErrors.email = 'Email không đúng định dạng';
-        isValid = false;
-      } else if (this.existingEmails.includes(this.registerForm.email)) {
-        this.registerErrors.email = 'Email này đã được sử dụng';
-        isValid = false;
-      }
-      
-      // Validate phone
-      if (!this.registerForm.phone) {
-        this.registerErrors.phone = 'Số điện thoại là bắt buộc';
-        isValid = false;
-      } else if (this.registerForm.phone.length < 10) {
-        this.registerErrors.phone = 'Số điện thoại không đúng định dạng';
-        isValid = false;
-      }
-      
-      // Validate password
-      if (!this.registerForm.password) {
-        this.registerErrors.password = 'Mật khẩu là bắt buộc';
-        isValid = false;
-      } else if (this.registerForm.password.length < 6) {
-        this.registerErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
-        isValid = false;
-      }
-      
-      // Validate confirm password
-      if (!this.registerForm.confirmPassword) {
-        this.registerErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu';
-        isValid = false;
-      } else if (this.registerForm.password !== this.registerForm.confirmPassword) {
-        this.registerErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
-        isValid = false;
-      }
-      
-      // Validate terms agreement
-      if (!this.registerForm.agreeTerms) {
-        this.showAlert('Vui lòng đồng ý với điều khoản sử dụng', 'error');
-        isValid = false;
-      }
-      
-      if (!isValid) return;
-      
-      this.registerLoading = true;
-      
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Add to registered users
-        this.registeredUsers.push({
-          email: this.registerForm.email,
-          password: this.registerForm.password,
-          name: this.registerForm.fullName,
-          phone: this.registerForm.phone,
-          role: 'user'
-        });
-        
-        this.existingEmails.push(this.registerForm.email);
-        
-        this.showAlert(`Đăng ký thành công! Chào mừng ${this.registerForm.fullName}`, 'success');
-        
-        // Clear form
-        this.registerForm = {
-          fullName: '',
-          email: '',
-          phone: '',
-          password: '',
-          confirmPassword: '',
-          agreeTerms: false
-        };
-        
-        // Switch to login after success
-        setTimeout(() => {
-          this.setActiveTab('login');
-          this.showAlert('Bạn có thể đăng nhập với tài khoản vừa tạo', 'success');
-        }, 2000);
-        
-      } catch (error) {
-        this.showAlert('Có lỗi xảy ra. Vui lòng thử lại sau.', 'error');
-      } finally {
-        this.registerLoading = false;
-      }
-    },
-    
-    // Forgot password handler
-    handleForgotPassword() {
-      if (!this.forgotPasswordEmail) {
-        alert('Vui lòng nhập email');
-        return;
-      }
-      
-      if (!this.validateEmail(this.forgotPasswordEmail)) {
-        alert('Email không đúng định dạng');
-        return;
-      }
-      
-      this.showForgotPasswordModal = false;
-      this.showAlert(`Link đặt lại mật khẩu đã được gửi đến ${this.forgotPasswordEmail}`, 'success');
-      this.forgotPasswordEmail = '';
     }
+  },
+
+  async mounted() {
+    const userStore = useUserStore();
     
+    // Khôi phục dữ liệu từ localStorage và kiểm tra token
+    const isAuthenticated = await userStore.restoreFromStorage();
+    
+    // Nếu đã đăng nhập và có thông tin remember me, điền vào form
+    if (isAuthenticated && userStore.rememberMe && userStore.getUsername) {
+      this.loginForm.username = userStore.getUsername;
+      this.loginForm.rememberMe = true;
+    }
   }
 }
 </script>
 
 <style scoped>
-.bg-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.login-container {
   min-height: 100vh;
-}
-
-.auth-card {
-  border: none;
-  border-radius: 15px;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.95);
-  min-width: 320px;
-  max-width: 400px;
-  width: 100%;
-}
-
-.logo-circle {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(102, 126, 234, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-.form-control {
-  border-radius: 10px;
-  padding: 12px 15px;
-  border: 2px solid #e9ecef;
+/* Background Animation */
+.background-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.floating-shapes {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.shape {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+  width: 80px;
+  height: 80px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 120px;
+  height: 120px;
+  top: 60%;
+  right: 10%;
+  animation-delay: 2s;
+}
+
+.shape-3 {
+  width: 60px;
+  height: 60px;
+  top: 80%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+.shape-4 {
+  width: 100px;
+  height: 100px;
+  top: 10%;
+  right: 30%;
+  animation-delay: 1s;
+}
+
+.shape-5 {
+  width: 40px;
+  height: 40px;
+  top: 40%;
+  left: 60%;
+  animation-delay: 3s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+/* Login Card */
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+/* Header */
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.logo-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.logo-icon i {
+  color: white;
+  font-size: 24px;
+}
+
+.logo-text {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.welcome-text {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  position: relative;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  color: #999;
+  z-index: 2;
+}
+
+.form-input {
+  width: 100%;
+  padding: 15px 15px 15px 45px;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.form-input:focus {
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-input.error {
+  background: #fff5f5;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.input-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.form-input:focus + .input-line {
+  width: 100%;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 14px;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Form Options */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  margin-right: 8px;
+  position: relative;
   transition: all 0.3s ease;
 }
 
-.form-control:focus {
+.checkbox-input:checked + .checkbox-custom {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.checkbox-input:checked + .checkbox-custom::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+}
+
+.checkbox-label {
+  color: #666;
+}
+
+.forgot-link {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* Login Button */
+.login-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 15px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Divider */
+.divider {
+  text-align: center;
+  position: relative;
+  margin: 20px 0;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #ddd;
+}
+
+.divider span {
+  background: white;
+  padding: 0 15px;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Social Login */
+.social-login {
+  display: flex;
+  gap: 10px;
+}
+
+.social-button {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #f1f3f4;
+  border-radius: 12px;
+  background: white;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.social-button:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.social-button.google:hover {
+  border-color: #ea4335;
+  color: #ea4335;
+}
+
+.social-button.facebook:hover {
+  border-color: #1877f2;
+  color: #1877f2;
+}
+
+/* Register Link */
+.register-link {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.register-button {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.register-button:hover {
+  text-decoration: underline;
+}
+
+/* Message Toast */
+.message-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 500;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideIn 0.3s ease;
+}
+
+.message-toast.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.message-toast.error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  border-radius: 10px;
-  padding: 12px;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  color: white;
+}
+
+.btn-secondary {
+  background: #f1f3f4;
+  color: #666;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
 }
 
-.alert {
-  border-radius: 10px;
-  border: none;
+.btn-secondary:hover {
+  background: #e8eaed;
 }
 
-.form-check-input:checked {
-  background-color: #667eea;
-  border-color: #667eea;
-}
-
-.spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-}
-
-.is-invalid {
-  animation: shake 0.5s ease-in-out;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-}
-
-.nav-tabs {
-  border: none;
-  justify-content: center;
-  gap: 20px;
-}
-
-.nav-tabs .nav-link {
-  border: none;
-  background: rgba(255, 255, 255, 0.2);
-  color: #667eea;
-  border-radius: 25px;
-  padding: 10px 25px;
-  transition: all 0.3s ease;
-  font-weight: 500;
-}
-
-.nav-tabs .nav-link:hover {
-  background: rgba(255, 255, 255, 0.3);
-  color: #667eea;
-}
-
-.nav-tabs .nav-link.active {
-  background: rgba(255, 255, 255, 0.9);
-  color: #667eea;
-  font-weight: 600;
-}
-
-@media (max-width: 576px) {
-  .auth-card {
-    margin: 15px;
-    min-width: auto;
+/* Responsive */
+@media (max-width: 480px) {
+  .login-card {
+    margin: 20px;
+    padding: 30px 20px;
+  }
+  
+  .social-login {
+    flex-direction: column;
+  }
+  
+  .form-options {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
   }
 }
 </style>

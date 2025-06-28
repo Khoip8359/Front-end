@@ -10,10 +10,9 @@ import '@fortawesome/fontawesome-free/css/all.min.css'
 
 const app = createApp(App)
 
-// ✅ Tạo 1 instance duy nhất
 const pinia = createPinia()
-pinia.use(piniaPluginPersistedstate) // ✅ Gắn plugin đúng cách
-app.use(pinia) // ✅ Dùng pinia duy nhất
+pinia.use(piniaPluginPersistedstate)
+app.use(pinia)
 
 app.use(router)
 app.mount('#app')

@@ -78,12 +78,59 @@
         <!-- Auth Section -->
         <div class="col-lg-2 col-md-2 col-sm-2 px-3">
           <div class="d-flex justify-content-center">
+            <!-- Nút đăng nhập khi chưa đăng nhập -->
             <RouterLink 
+              v-if="!userStore.isLoggedIn"
               to="/login" 
               class="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold shadow-sm"
             >
               <i class="bi bi-person-circle me-1"></i>Đăng nhập
             </RouterLink>
+            
+            <!-- User menu khi đã đăng nhập -->
+            <div v-else class="user-menu">
+              <div class="dropdown">
+                <button 
+                  class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-person-circle me-1"></i>
+                  {{ userStore.getFullName || userStore.getUsername }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <div class="dropdown-item-text">
+                      <div class="fw-bold">{{ userStore.getFullName || userStore.getUsername }}</div>
+                      <div class="text-muted small">{{ userStore.getEmail }}</div>
+                    </div>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <RouterLink class="dropdown-item" to="/profile">
+                      <i class="bi bi-person me-2"></i>Thông tin cá nhân
+                    </RouterLink>
+                  </li>
+                  <li>
+                    <RouterLink class="dropdown-item" to="/change-password">
+                      <i class="bi bi-key me-2"></i>Đổi mật khẩu
+                    </RouterLink>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <button 
+                      class="dropdown-item text-danger" 
+                      @click="handleLogout"
+                      :disabled="userStore.isLoading"
+                    >
+                      <i class="bi bi-box-arrow-right me-2"></i>
+                      {{ userStore.isLoading ? 'Đang đăng xuất...' : 'Đăng xuất' }}
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -135,12 +182,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { newsService } from '@/services/NewsService.js'
+import { useUserStore } from '@/stores/user.js'
 
 // Router & tìm kiếm
 const router = useRouter()
+const userStore = useUserStore()
 const searchQuery = ref('')
 // Categories data
 const categories = ref([])
@@ -150,11 +199,27 @@ const currentDate = ref('')
 const currentTime = ref('')
 let timeInterval = null
 
+// Watch thay đổi trạng thái đăng nhập
+watch(() => userStore.isLoggedIn, (newValue) => {
+  console.log('Login status changed:', newValue)
+})
+
 // Gửi truy vấn tìm kiếm
 const onSearch = () => {
   const keyword = searchQuery.value.trim()
   if (keyword !== '') {
     router.push({ path: '/category/0', query: { keyword } })
+  }
+}
+
+// Logout function
+const handleLogout = async () => {
+  try {
+    await userStore.logout()
+    // Chuyển về trang chủ sau khi đăng xuất
+    router.push('/')
+  } catch (error) {
+    console.error('Logout error:', error)
   }
 }
 
@@ -164,6 +229,22 @@ onMounted(async () => {
     categories.value = await newsService.getCategories()
   } catch (error) {
     console.error('Lấy danh mục thất bại:', error)
+  }
+
+  // Khôi phục dữ liệu user từ localStorage
+  try {
+    // Sử dụng method đơn giản để kiểm tra trạng thái đăng nhập
+    const isLoggedIn = userStore.checkLoginStatus()
+    
+    console.log('Login status check:', {
+      isLoggedIn,
+      isAuthenticated: userStore.isAuthenticated,
+      token: userStore.token,
+      username: userStore.user.username
+    })
+    
+  } catch (error) {
+    console.error('Khôi phục dữ liệu user thất bại:', error)
   }
 
   // Setup time update
@@ -278,5 +359,76 @@ const updateDateTime = () => {
   bottom: 0;
   backdrop-filter: blur(10px);
   z-index: -1;
+}
+
+/* User menu styles */
+.user-menu {
+  position: relative;
+}
+
+.user-menu .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.user-menu .dropdown-toggle::after {
+  margin-left: 8px;
+}
+
+.user-menu .dropdown-menu {
+  min-width: 200px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.user-menu .dropdown-item {
+  padding: 10px 16px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.user-menu .dropdown-item:hover {
+  background-color: #f8f9fa;
+  transform: translateX(4px);
+}
+
+.user-menu .dropdown-item.text-danger:hover {
+  background-color: #f8d7da;
+}
+
+.user-menu .dropdown-item-text {
+  padding: 10px 16px;
+}
+
+.user-menu .dropdown-item-text .fw-bold {
+  font-size: 14px;
+  color: #333;
+}
+
+.user-menu .dropdown-item-text .text-muted {
+  font-size: 12px;
+}
+
+.user-menu .dropdown-divider {
+  margin: 8px 0;
+  border-color: #e9ecef;
+}
+
+/* Responsive user menu */
+@media (max-width: 768px) {
+  .user-menu .dropdown-toggle {
+    min-width: 100px;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  
+  .user-menu .dropdown-menu {
+    min-width: 180px;
+  }
 }
 </style>
