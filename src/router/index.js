@@ -10,7 +10,6 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'user_layout',
       component: user_layout,
       children: [
         {
@@ -34,6 +33,7 @@ const router = createRouter({
       name: 'login',
       component: login
     },
+   
   ],
 })
 

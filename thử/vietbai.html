@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng bài viết</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .logo img {
+      height: 50px;
+    }
+
+    .center-section {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      margin: 0 20px;
+      gap: 20px;
+    }
+
+    .time {
+      color: #004080;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .search-box {
+      display: flex;
+      flex-grow: 1;
+      max-width: 300px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px 0 0 5px;
+      outline: none;
+    }
+
+    .search-box button {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      background-color: #eee;
+      border-left: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+    }
+
+    .login a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .menu {
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .menu ul {
+      list-style: none;
+      display: flex;
+      padding: 10px 20px;
+      margin: 0;
+      gap: 20px;
+    }
+
+    .menu li {
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .menu li:hover {
+      color: #007bff;
+    }
+
+    .content {
+      max-width: 700px;
+      margin: 30px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="url"],
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      resize: vertical;
+    }
+
+    .btn-add {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 30px;
+    }
+
+    .btn-add:hover {
+      background-color: #0056b3;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .buttons button {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-post {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .btn-post:hover {
+      background-color: #218838;
+    }
+
+    .btn-cancel {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-cancel:hover {
+      background-color: #c82333;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">
+      <img src="https://i.imgur.com/IaUrttj.png" alt="ESPORTS Logo">
+    </div>
+    
+    <div class="center-section">
+      <div class="time" id="currentTime"></div>
+      <div class="search-box">
+        <input type="text" placeholder="Tìm kiếm...">
+        <button>🔍</button>
+      </div>
+    </div>
+
+    <div class="login">
+      <a href="#">Đăng nhập</a>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <ul>
+      <li>Game</li>
+      <li>League of Legends</li>
+      <li>Valorant</li>
+      <li>Liên Quân</li>
+      <li>PUBG</li>
+    </ul>
+  </nav>
+
+  <div class="content" id="contentArea">
+    <div class="form-group">
+      <label for="title">Tiêu đề bài viết</label>
+      <input type="text" id="title" placeholder="Nhập tiêu đề bài viết...">
+    </div>
+
+    <div class="form-group">
+      <label for="subtitle">Phụ đề</label>
+      <input type="text" id="subtitle" placeholder="Nhập phụ đề nếu có...">
+    </div>
+
+    <div class="form-group">
+      <label for="thumbnail">Link ảnh đại diện (thumbnail)</label>
+      <input type="url" id="thumbnail" placeholder="Dán URL ảnh đại diện...">
+    </div>
+
+    <div class="form-group content-box">
+      <label>Đoạn nội dung 1</label>
+      <textarea placeholder="Nhập nội dung đoạn 1..."></textarea>
+    </div>
+
+    <button class="btn-add" onclick="addParagraph()">+ Thêm đoạn</button>
+
+    <div class="buttons">
+      <button class="btn-post">Đăng bài</button>
+      <button class="btn-cancel">Hủy đăng</button>
+    </div>
+  </div>
+
+  <script>
+    let count = 1;
+
+    function addParagraph() {
+      count++;
+      const newBox = document.createElement('div');
+      newBox.className = 'form-group content-box';
+      newBox.innerHTML = `
+        <label>Đoạn nội dung ${count}</label>
+        <textarea placeholder="Nhập nội dung đoạn ${count}..."></textarea>
+      `;
+      const content = document.getElementById('contentArea');
+      const addButton = document.querySelector('.btn-add');
+      content.insertBefore(newBox, addButton);
+    }
+
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleDateString('vi-VN') + ' - ' + now.toLocaleTimeString('vi-VN');
+      document.getElementById('currentTime').textContent = timeString;
+    }
+
+    setInterval(updateTime, 1000);
+    updateTime();
+  </script>
+
+</body>
+</html>
