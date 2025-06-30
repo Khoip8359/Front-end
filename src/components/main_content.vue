@@ -55,6 +55,7 @@
                 :key="news.newsId"
                 :to="`/detail/${news.newsId}`"
                 class="text-decoration-none text-dark"
+                @click="scrollToTop"
               >
                 <article class="card border-0 border-bottom rounded-0 news-item">
                   <div class="card-body p-4">
@@ -67,9 +68,6 @@
                             :alt="news.title"
                             style="height: 180px; object-fit: cover;"
                           />
-                          <div class="position-absolute top-0 start-0 p-2">
-                            <span class="badge bg-primary">{{ index + 1 }}</span>
-                          </div>
                         </div>
                       </div>
                       
@@ -166,6 +164,7 @@
                   :key="news.newsId"
                   :to="`/detail/${news.newsId}`"
                   class="text-decoration-none"
+                  @click="scrollToTop"
                 >
                   <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
                     <div class="flex-shrink-0 me-3">
@@ -196,7 +195,7 @@
           <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-success text-white py-3">
               <h6 class="mb-0 fw-bold">
-                Gợi ý cho bạn
+                💡 Gợi ý cho bạn
               </h6>
             </div>
             <div class="card-body p-0">
@@ -257,7 +256,7 @@
     <!-- Floating Chat Button -->
     <div class="position-fixed bottom-0 end-0 p-4" style="z-index: 1050;">
       <button class="btn btn-primary rounded-circle shadow-lg chat-btn" data-bs-toggle="tooltip" data-bs-placement="left" title="Trò chuyện">
-        <i class="fa-solid fa-comment"></i>
+        <i class="bi bi-chat-dots"></i>
       </button>
     </div>
   </div>
@@ -319,6 +318,10 @@ export default {
       }
     }
 
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
     const formatDate = (dateString) => {
       if (!dateString) return ''
       const d = new Date(dateString)
@@ -355,6 +358,7 @@ export default {
       currentPage,
       totalPages,
       goToPage,
+      scrollToTop,
       formatDate,
       visiblePages
     }

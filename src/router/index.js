@@ -4,6 +4,7 @@ import login from '@/components/login.vue'
 import main_content from '@/components/main_content.vue'
 import news_detail from '@/components/news_detail.vue'
 import Category from '@/components/category.vue'
+import Profile from '@/components/profile.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +26,12 @@ const router = createRouter({
           path: 'category/:categoryId',
           component: Category,
           props: true
+        },
+        {
+          path: 'profile/:username',
+          name: 'profile',
+          component: Profile,
+          meta: { requiresAuth: true }
         }
       ]
     },
@@ -33,7 +40,6 @@ const router = createRouter({
       name: 'login',
       component: login
     },
-   
   ],
 })
 

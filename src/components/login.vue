@@ -293,16 +293,13 @@ export default {
       try {
         const userStore = useUserStore();
         
-        // Gọi API đăng nhập thông qua Pinia store
         await userStore.login({
           username: this.loginForm.username,
           password: this.loginForm.password
         }, this.loginForm.rememberMe);
 
-        // Đăng nhập thành công
-        this.showMessage('Đăng nhập thành công!', 'success');
+        this.showMessage('Đăng nhập thành công! Vui lòng chờ chuyển hướng trang...', 'success');
         
-        // Chuyển hướng sau khi đăng nhập thành công
         setTimeout(() => {
           this.$router.push('/');
         }, 2000);

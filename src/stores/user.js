@@ -6,7 +6,7 @@ export const useUserStore = defineStore('user', {
     // Thông tin người dùng
     user: {
       username: '',
-      password: '', // Lưu tạm thời, KHÔNG khuyến khích cho production!
+      password: '',
       name: '',
       email: '',
       phone: '',

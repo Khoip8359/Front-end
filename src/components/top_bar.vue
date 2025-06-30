@@ -30,7 +30,7 @@
         
         <!-- Logo Section -->
         <div class="col-lg-2 col-md-3 col-sm-4">
-          <RouterLink to="/" class="d-flex justify-content-center align-items-center text-decoration-none">
+          <RouterLink to="/" class="d-flex justify-content-center align-items-center text-decoration-none" @click="scrollToTop">
             <div class="position-relative">
               <img 
                 class="rounded-circle shadow-sm border border-3 border-primary" 
@@ -83,6 +83,7 @@
               v-if="!userStore.isLoggedIn"
               to="/login" 
               class="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold shadow-sm"
+              @click="scrollToTop"
             >
               <i class="bi bi-person-circle me-1"></i>Đăng nhập
             </RouterLink>
@@ -108,7 +109,7 @@
                   </li>
                   <li><hr class="dropdown-divider"></li>
                   <li>
-                    <RouterLink class="dropdown-item" to="/profile">
+                    <RouterLink class="dropdown-item" :to="`/profile/${userStore.getUsername}`">
                       <i class="bi bi-person me-2"></i>Thông tin cá nhân
                     </RouterLink>
                   </li>
@@ -161,7 +162,7 @@
         <ul class="navbar-nav mb-2 mb-lg-0">
           <!-- Home Link -->
           <li class="nav-item">
-            <RouterLink class="nav-link text-white fw-semibold px-3 py-2 rounded-pill mx-1" to="/">
+            <RouterLink class="nav-link text-white fw-semibold px-3 py-2 rounded-pill mx-1" to="/" @click="scrollToTop">
               Trang chủ
             </RouterLink>
           </li>
@@ -171,6 +172,7 @@
             <RouterLink 
               class="nav-link text-white fw-semibold px-3 py-2 rounded-pill mx-1" 
               :to="`/category/${category.categoryId}`"
+              @click="scrollToTop"
             >
               {{ category.categoryName }}
             </RouterLink>
@@ -210,6 +212,11 @@ const onSearch = () => {
   if (keyword !== '') {
     router.push({ path: '/category/0', query: { keyword } })
   }
+}
+
+// Scroll to top function
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 // Logout function

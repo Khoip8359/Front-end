@@ -8,22 +8,16 @@
           <div class="d-flex flex-column gap-3">
             <!-- Like Button -->
             <div class="btn btn-success btn-lg d-flex flex-column align-items-center py-3 shadow-sm position-relative">
-              <i class="fa-solid fa-thumbs-up fs-4 mb-1"></i>
+              <i class="bi bi-hand-thumbs-up-fill fs-4 mb-1"></i>
               <small class="fw-bold">Thích</small>
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 {{ formatCount(news.likeCount || 0) }}
               </span>
             </div>
             
-            <!-- Favorite Button -->
-            <div class="btn btn-warning btn-lg d-flex flex-column align-items-center py-3 shadow-sm">
-              <i class="fa-solid fa-star fs-4 mb-1"></i>
-              <small class="fw-bold">Lưu</small>
-            </div>
-            
             <!-- Share Button -->
             <div class="btn btn-info btn-lg d-flex flex-column align-items-center py-3 shadow-sm" @click="shareArticle">
-              <i class="fa-solid fa-share-from-square fs-4 mb-1"></i>
+              <i class="bi bi-share fs-4 mb-1"></i>
               <small class="fw-bold">Chia sẻ</small>
             </div>
           </div>
@@ -44,16 +38,16 @@
               <div class="d-flex align-items-center gap-3 mb-4">
                 <div class="d-flex align-items-center">
                   <div class="bg-primary rounded-circle p-2 me-2">
-                    <i class="fa-solid fa-user text-white"></i>
+                    <i class="bi bi-person-fill text-white"></i>
                   </div>
                   <span class="fw-semibold">{{ news.authorName || 'Tác giả' }}</span>
                 </div>
                 <div class="d-flex align-items-center text-muted">
-                  <i class="fa-regular fa-calendar me-2"></i>
+                  <i class="bi bi-calendar3 me-2"></i>
                   <span>{{ formatDate(news.createdDate) }}</span>
                 </div>
                 <div class="d-flex align-items-center text-muted">
-                  <i class="fa-regular fa-eye me-2"></i>
+                  <i class="bi bi-eye me-2"></i>
                   <span>{{ formatCount(news.viewCount || 0) }} lượt xem</span>
                 </div>
               </div>
@@ -98,7 +92,7 @@
         <div class="card shadow-lg border-0 rounded-4 mb-4">
           <div class="card-header bg-light border-0 py-4">
             <h5 class="mb-0 fw-bold">
-              <i class="fa-regular fa-comments me-2 text-primary"></i>
+              <i class="bi bi-chat-dots me-2 text-primary"></i>
               Bình luận ({{ comments.length }})
             </h5>
           </div>
@@ -121,7 +115,7 @@
                   @click="submitComment"
                   :disabled="!newComment.trim()"
                 >
-                  <i class="fa-solid fa-paper-plane me-2"></i>
+                  <i class="bi bi-send me-2"></i>
                   Gửi bình luận
                 </button>
               </div>
@@ -132,7 +126,7 @@
               <div v-for="comment in comments" :key="comment.id" class="border-bottom pb-3 mb-3">
                 <div class="d-flex align-items-start">
                   <div class="bg-secondary rounded-circle p-2 me-3">
-                    <i class="fa-solid fa-user text-white"></i>
+                    <i class="bi bi-person-fill text-white"></i>
                   </div>
                   <div class="flex-grow-1">
                     <div class="d-flex align-items-center gap-2 mb-1">
@@ -145,7 +139,7 @@
               </div>
             </div>
             <div v-else class="text-center py-4">
-              <i class="fa-regular fa-comments display-6 text-muted"></i>
+              <i class="bi bi-chat-dots display-6 text-muted"></i>
               <p class="text-muted mt-2">Chưa có bình luận nào</p>
             </div>
           </div>
@@ -155,7 +149,7 @@
         <div class="card shadow-lg border-0 rounded-4">
           <div class="card-header bg-success text-white py-4 border-0">
             <h5 class="mb-0 fw-bold">
-              <i class="fa-solid fa-lightbulb me-2"></i>
+              <i class="bi bi-lightbulb me-2"></i>
               Bài viết gợi ý
             </h5>
           </div>
@@ -165,7 +159,7 @@
                 <div class="card h-100 border-0 shadow-sm">
                   <div class="card-body p-3">
                     <div class="bg-light rounded-3 p-3 mb-2 text-center" v-if="!article.thumbnail">
-                      <i class="fa-solid fa-newspaper fs-3 text-muted"></i>
+                      <i class="bi bi-newspaper fs-3 text-muted"></i>
                     </div>
                     <img 
                       v-else
@@ -176,7 +170,7 @@
                     />
                     <h6 class="card-title">{{ article.title || `Tin tức gợi ý ${article.newsId}` }}</h6>
                     <p class="card-text small text-muted">{{ article.subtitle || 'Mô tả ngắn về bài viết...' }}</p>
-                    <RouterLink :to="`/detail/${article.newsId}`" class="btn btn-outline-success btn-sm">
+                    <RouterLink :to="`/detail/${article.newsId}`" class="btn btn-outline-success btn-sm" @click="scrollToTop">
                       Đọc thêm
                     </RouterLink>
                   </div>
@@ -194,13 +188,13 @@
           <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-danger text-white py-3">
               <h6 class="mb-0 fw-bold">
-                <i class="fa-solid fa-fire me-2"></i>
+                <i class="bi bi-fire me-2"></i>
                 Tin nóng
               </h6>
             </div>
             <div class="card-body p-0">
               <div v-if="hotNews.length === 0" class="text-center py-4">
-                <i class="fa-solid fa-newspaper display-4 text-muted"></i>
+                <i class="bi bi-newspaper display-4 text-muted"></i>
                 <p class="text-muted mt-2">Chưa có tin nóng</p>
               </div>
               <div v-else>
@@ -209,6 +203,7 @@
                   :key="hotArticle.newsId"
                   :to="`/detail/${hotArticle.newsId}`"
                   class="text-decoration-none"
+                  @click="scrollToTop"
                 >
                   <div class="d-flex align-items-center p-3 border-bottom hot-news-item position-relative">
                     <div class="flex-shrink-0 me-3 position-relative">
@@ -225,7 +220,7 @@
                     <div class="flex-grow-1">
                       <h6 class="mb-1 fw-semibold text-dark hot-news-title">{{ hotArticle.title }}</h6>
                       <small class="text-muted">
-                        <i class="fa-regular fa-clock me-1"></i>
+                        <i class="bi bi-clock me-1"></i>
                         {{ formatDate(hotArticle.createdDate) }}
                       </small>
                     </div>
@@ -239,7 +234,7 @@
           <div class="card shadow-lg border-0 rounded-4 mb-4">
             <div class="card-body p-4 text-center bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
               <div class="text-white">
-                <i class="fa-solid fa-envelope-open fs-1 mb-3"></i>
+                <i class="bi bi-envelope-open fs-1 mb-3"></i>
                 <h6 class="fw-bold mb-3">Đăng ký nhận tin</h6>
                 <p class="small mb-4 opacity-75">Nhận những tin tức mới nhất qua email</p>
                 <div class="input-group mb-3">
@@ -255,7 +250,7 @@
                     @click="subscribeNewsletter"
                     :disabled="!isValidEmail(email)"
                   >
-                    <i class="fa-regular fa-paper-plane"></i>
+                    <i class="bi bi-send"></i>
                   </button>
                 </div>
                 <small class="opacity-75">Chúng tôi không spam email</small>
@@ -269,16 +264,16 @@
               <h6 class="fw-bold mb-3">Theo dõi chúng tôi</h6>
               <div class="d-flex justify-content-center gap-2">
                 <a href="#" class="btn btn-primary btn-sm rounded-circle p-2" aria-label="Facebook">
-                  <i class="fa-brands fa-facebook-f"></i>
+                  <i class="bi bi-facebook"></i>
                 </a>
                 <a href="#" class="btn btn-info btn-sm rounded-circle p-2" aria-label="Twitter">
-                  <i class="fa-brands fa-twitter"></i>
+                  <i class="bi bi-twitter-x"></i>
                 </a>
                 <a href="#" class="btn btn-danger btn-sm rounded-circle p-2" aria-label="YouTube">
-                  <i class="fa-brands fa-youtube"></i>
+                  <i class="bi bi-youtube"></i>
                 </a>
                 <a href="#" class="btn btn-success btn-sm rounded-circle p-2" aria-label="WhatsApp">
-                  <i class="fa-brands fa-whatsapp"></i>
+                  <i class="bi bi-whatsapp"></i>
                 </a>
               </div>
             </div>
@@ -374,24 +369,6 @@ export default {
       }
     };
 
-    // const fetchComments = async (newsId) => {
-    //   try {
-    //     const data = await newsService.getComments(newsId);
-    //     comments.value = data || [];
-    //   } catch (err) {
-    //     console.error('Error fetching comments:', err);
-    //     comments.value = [];
-    //   }
-    // };
-
-    // const updateViewCount = async (newsId) => {
-    //   try {
-    //     await newsService.updateViewCount(newsId);
-    //   } catch (err) {
-    //     console.error('Error updating view count:', err);
-    //   }
-    // };
-
     const submitComment = async () => {
       if (!newComment.value.trim()) return;
       
@@ -399,7 +376,7 @@ export default {
         const comment = {
           newsId: route.params.newsId,
           content: newComment.value.trim(),
-          author: 'Người dùng ẩn danh', // Replace with actual user data
+          author: 'Người dùng ẩn danh',
           createdDate: new Date().toISOString()
         };
         
@@ -412,23 +389,22 @@ export default {
     };
 
     const shareArticle = async () => {
-      if (navigator.share) {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('✅ Đã sao chép link bài viết vào clipboard!');
+      } catch (err) {
+        console.error('Error copying to clipboard:', err);
+        // Fallback for older browsers
         try {
-          await navigator.share({
-            title: news.value.title,
-            text: news.value.subtitle,
-            url: window.location.href
-          });
-        } catch (err) {
-          console.error('Error sharing:', err);
-        }
-      } else {
-        // Fallback: copy to clipboard
-        try {
-          await navigator.clipboard.writeText(window.location.href);
-          alert('Đã sao chép link bài viết vào clipboard!');
-        } catch (err) {
-          console.error('Error copying to clipboard:', err);
+          const textArea = document.createElement('textarea');
+          textArea.value = window.location.href;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          alert('✅ Đã sao chép link bài viết vào clipboard!');
+        } catch (fallbackErr) {
+          alert('❌ Không thể sao chép link. Vui lòng thử lại!');
         }
       }
     };
@@ -478,6 +454,10 @@ export default {
       event.target.src = 'https://placehold.co/800x200?text=Quảng+cáo';
     };
 
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     // Watch for route changes
     watch(
       () => route.params.newsId,
@@ -508,7 +488,8 @@ export default {
       subscribeNewsletter,
       isValidEmail,
       handleImageError,
-      handleAdError
+      handleAdError,
+      scrollToTop
     };
   },
 };

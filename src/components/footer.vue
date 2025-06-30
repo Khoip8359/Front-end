@@ -8,7 +8,7 @@
           <p class="text-secondary">Stay updated with the latest news from GaNews</p>
           <form class="d-flex w-100" @submit.prevent>
             <input type="email" class="form-control me-2" placeholder="Enter your email" required />
-            <button class="btn btn-info text-white" type="submit"><i class="fas fa-envelope"></i></button>
+            <button class="btn btn-info text-white" type="submit"><i class="bi bi-envelope"></i></button>
           </form>
         </div>
 
@@ -56,9 +56,9 @@
         <div class="col-md-6 col-lg-2">
           <h5 class="text-uppercase mb-3">Follow Us</h5>
           <div class="d-flex gap-2">
-            <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="btn btn-outline-light btn-sm rounded-circle"><i class="bi bi-instagram"></i></a>
           </div>
         </div>
 

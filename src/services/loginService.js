@@ -14,6 +14,15 @@ class LoginService {
         username: credentials.username,
         password: credentials.password
       })
+      
+      // Lưu token và thông tin user
+      if (response.data.token) {
+        this.saveToken(response.data.token)
+      }
+      if (response.data.user) {
+        this.saveUser(response.data.user)
+      }
+      
       return response.data
     } catch (error) {
       throw error
@@ -89,8 +98,16 @@ class LoginService {
   async logout() {
     try {
       const response = await apiClient.post('/api/auth/logout')
+      
+      // Xóa token và thông tin user
+      this.removeToken()
+      this.removeUser()
+      
       return response.data
     } catch (error) {
+      // Vẫn xóa token và user ngay cả khi API call thất bại
+      this.removeToken()
+      this.removeUser()
       throw error
     }
   }
@@ -113,7 +130,8 @@ class LoginService {
    * @param {string} token - JWT token
    */
   saveToken(token) {
-    localStorage.setItem('authToken', token)
+    localStorage.setItem('token', token)
+    localStorage.setItem('authToken', token) // Để tương thích ngược
   }
 
   /**
@@ -121,14 +139,39 @@ class LoginService {
    * @returns {string|null} JWT token hoặc null
    */
   getToken() {
-    return localStorage.getItem('authToken')
+    return localStorage.getItem('token') || localStorage.getItem('authToken')
   }
 
   /**
    * Xóa token khỏi localStorage
    */
   removeToken() {
+    localStorage.removeItem('token')
     localStorage.removeItem('authToken')
+  }
+
+  /**
+   * Lưu thông tin user vào localStorage
+   * @param {Object} userData - Thông tin user
+   */
+  saveUser(userData) {
+    localStorage.setItem('user', JSON.stringify(userData))
+  }
+
+  /**
+   * Lấy thông tin user từ localStorage
+   * @returns {Object|null} Thông tin user hoặc null
+   */
+  getUser() {
+    const user = localStorage.getItem('user')
+    return user ? JSON.parse(user) : null
+  }
+
+  /**
+   * Xóa thông tin user khỏi localStorage
+   */
+  removeUser() {
+    localStorage.removeItem('user')
   }
 
   /**
@@ -159,7 +202,9 @@ class LoginService {
    * @returns {boolean} true nếu đã đăng nhập
    */
   isLoggedIn() {
-    return !!this.getToken()
+    const token = this.getToken()
+    const user = this.getUser()
+    return !!(token && user && user.username)
   }
 }
 

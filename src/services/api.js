@@ -10,8 +10,15 @@ const apiClient = axios.create({
   }
 })
 
+// Interceptor để thêm token vào header nếu có
 apiClient.interceptors.request.use(
   (config) => {
+    // Thêm token từ localStorage nếu có
+    const token = localStorage.getItem('token') || localStorage.getItem('authToken')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+
     if (import.meta.env.VITE_DEBUG_MODE === 'true') {
       console.log('API Request:', config)
     }
@@ -30,6 +37,19 @@ apiClient.interceptors.response.use(
     if (import.meta.env.VITE_DEBUG_MODE === 'true') {
       console.error('API Error:', error)
     }
+
+    // Xử lý lỗi 401 (unauthorized)
+    if (error.response?.status === 401) {
+      // Token hết hạn hoặc không hợp lệ
+      localStorage.removeItem('token')
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('user')
+      // Có thể redirect về trang login
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
+    }
+
     return Promise.reject(error)
   }
 )
