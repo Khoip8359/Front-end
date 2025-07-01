@@ -234,21 +234,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Weather Widget -->
-          <div class="card border-0 shadow-sm">
-            <div class="card-body text-center">
-              <h6 class="card-title mb-3">
-                <i class="bi bi-cloud-sun me-2"></i>
-                Thời tiết
-              </h6>
-              <div class="bg-info text-white rounded p-3">
-                <i class="bi bi-sun display-4 mb-2"></i>
-                <h5 class="mb-1">28°C</h5>
-                <small>Hôm nay, Sunny</small>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -123,17 +123,17 @@
 
             <!-- Comments List -->
             <div v-if="comments.length > 0">
-              <div v-for="comment in comments" :key="comment.id" class="border-bottom pb-3 mb-3">
+              <div v-for="comment in comments" :key="comment.commentId" class="border-bottom pb-3 mb-3">
                 <div class="d-flex align-items-start">
                   <div class="bg-secondary rounded-circle p-2 me-3">
                     <i class="bi bi-person-fill text-white"></i>
                   </div>
                   <div class="flex-grow-1">
                     <div class="d-flex align-items-center gap-2 mb-1">
-                      <strong>{{ comment.author }}</strong>
-                      <small class="text-muted">{{ formatDate(comment.createdDate) }}</small>
+                      <strong>{{ comment.user?.name || 'Ẩn danh' }}</strong>
+                      <small class="text-muted">{{ formatDate(comment.date) }}</small>
                     </div>
-                    <p class="mb-0">{{ comment.content }}</p>
+                    <p class="mb-0">{{ comment.commentDetail }}</p>
                   </div>
                 </div>
               </div>
@@ -319,18 +319,22 @@
 
 <script>
 import { ref, onMounted, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { newsService } from "@/services/NewsService";
+import { commentService } from "@/services/commentService.js";
+import { useAuthStore } from '@/stores/auth.js';
 
 export default {
   setup() {
     const news = ref(null);
     const route = useRoute();
+    const router = useRouter();
     const hotNews = ref([]);
     const suggestNews = ref([]);
     const comments = ref([]);
     const newComment = ref('');
     const email = ref('');
+    const auth = useAuthStore();
 
     const fetchDetail = async () => {
       try {
@@ -340,14 +344,19 @@ export default {
         }
         const data = await newsService.getNewsDetail(newsId);
         news.value = data;
-        
-        // Fetch related data
-        await Promise.all([
-          // fetchComments(newsId),
-          // updateViewCount(newsId)
-        ]);
       } catch (err) {
         console.error('Error fetching news:', err);
+      }
+    };
+
+    const fetchComments = async () => {
+      try {
+        const newsId = route.params.newsId;
+        if (!newsId) return;
+        comments.value = await commentService.getComments(newsId);
+      } catch (err) {
+        console.error('Error fetching comments:', err);
+        comments.value = [];
       }
     };
 
@@ -371,17 +380,23 @@ export default {
 
     const submitComment = async () => {
       if (!newComment.value.trim()) return;
-      
+
+      // Lấy userId từ localStorage với key 'auth_user'
+      const user = JSON.parse(localStorage.getItem('auth_user'));
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+
       try {
         const comment = {
+          userId: user.user.userId,
           newsId: route.params.newsId,
-          content: newComment.value.trim(),
-          author: 'Người dùng ẩn danh',
-          createdDate: new Date().toISOString()
+          commentDetail: newComment.value.trim(),
+          date: new Date().toISOString()
         };
-        
-        await newsService.addComment(comment);
-        comments.value.unshift(comment);
+        await commentService.addComment(comment);
+        await fetchComments();
         newComment.value = '';
       } catch (err) {
         console.error('Error submitting comment:', err);
@@ -464,12 +479,15 @@ export default {
       (newId) => {
         if (newId) {
           fetchDetail();
+          fetchComments();
         }
-      }
+      },
+      { immediate: true }
     );
 
     onMounted(() => {
       fetchDetail();
+      fetchComments();
       fetchHotNews();
       fetchSuggestNews();
     });

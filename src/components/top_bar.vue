@@ -45,7 +45,7 @@
         </div>
 
         <!-- Date Time Section -->
-        <div class="col-lg-2 col-md-3 d-none d-md-block">
+        <RouterLink to="/time" class="col-lg-2 col-md-3 d-none d-md-block">
           <div class="text-center">
             <div class="badge bg-light text-dark fs-6 px-3 py-2 shadow-sm mb-1">
               <i class="bi bi-calendar3 me-1"></i>
@@ -56,7 +56,7 @@
               <span>{{ currentTime }}</span>
             </div>
           </div>
-        </div>
+        </RouterLink>
 
         <!-- Search Section -->
         <div class="col-lg-6 col-md-4 col-sm-6 px-3">
@@ -78,60 +78,63 @@
         <!-- Auth Section -->
         <div class="col-lg-2 col-md-2 col-sm-2 px-3">
           <div class="d-flex justify-content-center">
-            <!-- Nút đăng nhập khi chưa đăng nhập -->
+            <!-- User Menu (when logged in) -->
+            <div v-if="authStore.isLoggedIn" class="dropdown user-menu">
+              <button 
+                class="btn btn-outline-primary dropdown-toggle rounded-pill px-4 py-2 fw-semibold shadow-sm"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-person-circle me-1"></i>
+                {{ authStore.displayName }}
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <div class="dropdown-item-text">
+                    <div class="fw-bold">{{ authStore.displayName }}</div>
+                    <div class="text-muted">{{ authStore.userEmail }}</div>
+                  </div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <RouterLink class="dropdown-item" :to="`/profile/${authStore.currentUser.username}`">
+                    <i class="bi bi-person me-2"></i>Hồ sơ cá nhân
+                  </RouterLink>
+                </li>
+                <li>
+                  <RouterLink class="dropdown-item" to="/changePassword">
+                    <i class="bi bi-key me-2"></i>Đổi mật khẩu
+                  </RouterLink>
+                </li>
+                <li v-if="authStore.isReporter">
+                  <RouterLink class="dropdown-item" to="/reporter">
+                    <i class="bi bi-pencil-square me-2"></i>Quản lý bài viết
+                  </RouterLink>
+                </li>
+                <li v-if="authStore.isCensor">
+                  <RouterLink class="dropdown-item" to="/censor">
+                    <i class="bi bi-shield-check me-2"></i>Kiểm duyệt
+                  </RouterLink>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <button class="dropdown-item text-danger" @click="handleLogout">
+                    <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                  </button>
+                </li>
+              </ul>
+            </div>
+            
+            <!-- Login Button (when not logged in) -->
             <RouterLink 
-              v-if="!userStore.isLoggedIn"
+              v-else
               to="/login" 
               class="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold shadow-sm"
               @click="scrollToTop"
             >
               <i class="bi bi-person-circle me-1"></i>Đăng nhập
             </RouterLink>
-            
-            <!-- User menu khi đã đăng nhập -->
-            <div v-else class="user-menu">
-              <div class="dropdown">
-                <button 
-                  class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm dropdown-toggle"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="bi bi-person-circle me-1"></i>
-                  {{ userStore.getFullName || userStore.getUsername }}
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <div class="dropdown-item-text">
-                      <div class="fw-bold">{{ userStore.getFullName || userStore.getUsername }}</div>
-                      <div class="text-muted small">{{ userStore.getEmail }}</div>
-                    </div>
-                  </li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li>
-                    <RouterLink class="dropdown-item" :to="`/profile/${userStore.getUsername}`">
-                      <i class="bi bi-person me-2"></i>Thông tin cá nhân
-                    </RouterLink>
-                  </li>
-                  <li>
-                    <RouterLink class="dropdown-item" to="/change-password">
-                      <i class="bi bi-key me-2"></i>Đổi mật khẩu
-                    </RouterLink>
-                  </li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li>
-                    <button 
-                      class="dropdown-item text-danger" 
-                      @click="handleLogout"
-                      :disabled="userStore.isLoading"
-                    >
-                      <i class="bi bi-box-arrow-right me-2"></i>
-                      {{ userStore.isLoading ? 'Đang đăng xuất...' : 'Đăng xuất' }}
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -186,12 +189,12 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import { newsService } from '@/services/NewsService.js'
-import { useUserStore } from '@/stores/user.js'
 
 // Router & tìm kiếm
 const router = useRouter()
-const userStore = useUserStore()
+const authStore = useAuthStore()
 const searchQuery = ref('')
 // Categories data
 const categories = ref([])
@@ -200,11 +203,6 @@ const categories = ref([])
 const currentDate = ref('')
 const currentTime = ref('')
 let timeInterval = null
-
-// Watch thay đổi trạng thái đăng nhập
-watch(() => userStore.isLoggedIn, (newValue) => {
-  console.log('Login status changed:', newValue)
-})
 
 // Gửi truy vấn tìm kiếm
 const onSearch = () => {
@@ -219,39 +217,12 @@ const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-// Logout function
-const handleLogout = async () => {
-  try {
-    await userStore.logout()
-    // Chuyển về trang chủ sau khi đăng xuất
-    router.push('/')
-  } catch (error) {
-    console.error('Logout error:', error)
-  }
-}
-
 // Fetch categories
 onMounted(async () => {
   try {
     categories.value = await newsService.getCategories()
   } catch (error) {
     console.error('Lấy danh mục thất bại:', error)
-  }
-
-  // Khôi phục dữ liệu user từ localStorage
-  try {
-    // Sử dụng method đơn giản để kiểm tra trạng thái đăng nhập
-    const isLoggedIn = userStore.checkLoginStatus()
-    
-    console.log('Login status check:', {
-      isLoggedIn,
-      isAuthenticated: userStore.isAuthenticated,
-      token: userStore.token,
-      username: userStore.user.username
-    })
-    
-  } catch (error) {
-    console.error('Khôi phục dữ liệu user thất bại:', error)
   }
 
   // Setup time update
@@ -270,6 +241,12 @@ const updateDateTime = () => {
   const now = new Date()
   currentDate.value = now.toLocaleDateString('vi-VN')
   currentTime.value = now.toLocaleTimeString('vi-VN')
+}
+
+// Handle logout
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/')
 }
 </script>
 

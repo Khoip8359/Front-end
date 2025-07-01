@@ -75,5 +75,17 @@ export const newsService = {
       console.error('getCategories error:', error)
       throw new Error('Không thể tải danh mục')
     }
+  },
+
+  async getNewsByDate(date, page = 0, size = 5) {
+    try {
+      const response = await apiClient.get('/api/news/by-date', {
+        params: { date, page, size }
+      })
+      return response.data
+    } catch (error) {
+      console.error('getNewsByDate error:', error)
+      throw new Error('Không thể tải tin tức theo ngày')
+    }
   }
 }

@@ -3,7 +3,6 @@
     <!-- Top Bar -->
     <top_bar></top_bar>
 
-    <!-- Main Layout -->
     <RouterView></RouterView>
     
     <!-- Footer -->
