@@ -110,13 +110,6 @@
                       </svg>
                       <span>{{ formatViews(news.views) }} lượt xem</span>
                     </div>
-                    <div class="meta-item time">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12,6 12,12 16,14"></polyline>
-                      </svg>
-                      <span>{{ news.publishTime }}</span>
-                    </div>
                   </div>
                 </div>
                 <div class="news-arrow">
@@ -287,9 +280,7 @@ onMounted(async () => {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
-.calendar-news-wrapper {
-  /* Không cần width, margin, padding ngang, flex, gap, min-width, max-width, box-sizing */
-}
+
 .calendar-col, .news-col {
   padding-top: 40px;
   padding-bottom: 40px;

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { loginService } from '@/services/loginService.js'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -68,31 +69,12 @@ export const useAuthStore = defineStore('auth', {
     // Đăng nhập
     async login(loginData) {
       try {
-        // Gọi API login
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: loginData.username,
-            password: loginData.password
-          })
-        })
-
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.message || 'Đăng nhập thất bại')
-        }
-
-        const userData = await response.json()
+        const userData = await loginService.login(loginData.username, loginData.password)
         
-        // Lưu thông tin user
         this.user = userData
-        this.isAuthenticated = true
+        this.isAuthenticated = true 
         this.rememberMe = loginData.rememberMe || false
         
-        // Lưu vào localStorage nếu chọn "Ghi nhớ"
         if (this.rememberMe) {
           localStorage.setItem('auth_user', JSON.stringify(userData))
           localStorage.setItem('auth_remember', 'true')
@@ -111,20 +93,7 @@ export const useAuthStore = defineStore('auth', {
     // Đăng ký
     async register(registerData) {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(registerData)
-        })
-
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.message || 'Đăng ký thất bại')
-        }
-
-        const result = await response.json()
+        const result = await loginService.register(registerData)
         return result
       } catch (error) {
         console.error('Register error:', error)
@@ -183,11 +152,13 @@ export const useAuthStore = defineStore('auth', {
     updateUser(userData) {
       this.user = { ...this.user, ...userData }
       
-      // Cập nhật storage
+      // Cập nhật storage dựa trên rememberMe
       if (this.rememberMe) {
         localStorage.setItem('auth_user', JSON.stringify(this.user))
+        localStorage.setItem('auth_remember', 'true')
       } else {
         sessionStorage.setItem('auth_user', JSON.stringify(this.user))
+        sessionStorage.setItem('auth_remember', 'false')
       }
     },
 
@@ -225,15 +196,8 @@ export const useAuthStore = defineStore('auth', {
     }
   },
 
-  // Persist state
+  // Persist state - chỉ lưu khi rememberMe = true
   persist: {
-    enabled: true,
-    strategies: [
-      {
-        key: 'auth',
-        storage: localStorage,
-        paths: ['user', 'isAuthenticated', 'rememberMe']
-      }
-    ]
+    enabled: false // Tắt persist tự động, sử dụng logic thủ công
   }
 }) 

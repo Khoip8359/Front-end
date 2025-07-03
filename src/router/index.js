@@ -7,7 +7,6 @@ import Profile from '@/components/profile.vue'
 import ChangePassword from '@/components/changePassword.vue'
 import AuthForm from '@/components/AuthForm.vue'
 import Time from '@/views/time.vue'
-import Calendar from '@/components/calendar.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

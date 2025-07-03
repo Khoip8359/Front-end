@@ -45,7 +45,7 @@
         </div>
 
         <!-- Date Time Section -->
-        <RouterLink to="/time" class="col-lg-2 col-md-3 d-none d-md-block">
+        <RouterLink to="/time" @click="scrollToTop" class="col-lg-2 col-md-3 d-none d-md-block">
           <div class="text-center">
             <div class="badge bg-light text-dark fs-6 px-3 py-2 shadow-sm mb-1">
               <i class="bi bi-calendar3 me-1"></i>
@@ -75,10 +75,8 @@
           </div>
         </div>
 
-        <!-- Auth Section -->
         <div class="col-lg-2 col-md-2 col-sm-2 px-3">
           <div class="d-flex justify-content-center">
-            <!-- User Menu (when logged in) -->
             <div v-if="authStore.isLoggedIn" class="dropdown user-menu">
               <button 
                 class="btn btn-outline-primary dropdown-toggle rounded-pill px-4 py-2 fw-semibold shadow-sm"
@@ -126,7 +124,6 @@
               </ul>
             </div>
             
-            <!-- Login Button (when not logged in) -->
             <RouterLink 
               v-else
               to="/login" 

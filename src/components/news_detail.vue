@@ -7,11 +7,18 @@
         <div class="sticky-top" style="top: 20px;">
           <div class="d-flex flex-column gap-3">
             <!-- Like Button -->
-            <div class="btn btn-success btn-lg d-flex flex-column align-items-center py-3 shadow-sm position-relative">
+            <div 
+              :class="[
+                'btn btn-lg d-flex flex-column align-items-center py-3 shadow-sm position-relative',
+                isLiked ? 'btn-primary' : 'btn-outline-primary'
+              ]"
+              @click="handleLike"
+              style="cursor: pointer;"
+            >
               <i class="bi bi-hand-thumbs-up-fill fs-4 mb-1"></i>
               <small class="fw-bold">Thích</small>
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                {{ formatCount(news.likeCount || 0) }}
+                {{ formatCount(news.likes || 0) }}
               </span>
             </div>
             
@@ -48,7 +55,7 @@
                 </div>
                 <div class="d-flex align-items-center text-muted">
                   <i class="bi bi-eye me-2"></i>
-                  <span>{{ formatCount(news.viewCount || 0) }} lượt xem</span>
+                  <span>{{ formatCount(news.views || 0) }} lượt xem</span>
                 </div>
               </div>
             </div>
@@ -323,6 +330,8 @@ import { useRoute, useRouter } from "vue-router";
 import { newsService } from "@/services/NewsService";
 import { commentService } from "@/services/commentService.js";
 import { useAuthStore } from '@/stores/auth.js';
+import { newsLetterService } from "@/services/index.js";
+import { ReactService } from "@/services/React.js";
 
 export default {
   setup() {
@@ -335,6 +344,7 @@ export default {
     const newComment = ref('');
     const email = ref('');
     const auth = useAuthStore();
+    const isLiked = ref(false);
 
     const fetchDetail = async () => {
       try {
@@ -363,7 +373,8 @@ export default {
     const fetchHotNews = async () => {
       try {
         const data = await newsService.getHotNews();
-        hotNews.value = data;
+        const currentNewsId = route.params.newsId;
+        hotNews.value = data.filter(article => article.newsId != currentNewsId);
       } catch (err) {
         console.error('Error fetching hot news:', err);
       }
@@ -372,7 +383,8 @@ export default {
     const fetchSuggestNews = async () => {
       try {
         const data = await newsService.getSuggestNews();
-        suggestNews.value = data;
+        const currentNewsId = route.params.newsId;
+        suggestNews.value = data.filter(article => article.newsId != currentNewsId);
       } catch (err) {
         console.error('Error fetching suggest news:', err);
       }
@@ -381,16 +393,15 @@ export default {
     const submitComment = async () => {
       if (!newComment.value.trim()) return;
 
-      // Lấy userId từ localStorage với key 'auth_user'
-      const user = JSON.parse(localStorage.getItem('auth_user'));
-      if (!user) {
+      // Kiểm tra đăng nhập bằng Pinia store
+      if (!auth.isLoggedIn || !auth.currentUser) {
         router.push('/login');
         return;
       }
 
       try {
         const comment = {
-          userId: user.user.userId,
+          userId: auth.currentUser.user.userId,
           newsId: route.params.newsId,
           commentDetail: newComment.value.trim(),
           date: new Date().toISOString()
@@ -428,7 +439,7 @@ export default {
       if (!isValidEmail(email.value)) return;
       
       try {
-        await newsService.subscribeNewsletter(email.value);
+        await newsLetterService.subscribeNewsletter(email.value);
         alert('Đăng ký thành công!');
         email.value = '';
       } catch (err) {
@@ -473,6 +484,56 @@ export default {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    // Kiểm tra trạng thái like
+    const checkLikeStatus = async () => {
+      if (!auth.isLoggedIn || !auth.currentUser) {
+        isLiked.value = false;
+        return;
+      }
+
+      try {
+        const body = {
+          user_id: String(auth.currentUser.user.userId),
+          news_id: String(route.params.newsId)
+        };
+        const response = await ReactService.getCheckReact(body);
+        isLiked.value = response;
+      } catch (err) {
+        console.error('Error checking like status:', err);
+        isLiked.value = false;
+      }
+    };
+
+    const handleLike = async () => {
+      if (!auth.isLoggedIn || !auth.currentUser) {
+        router.push('/login');
+        return;
+      }
+
+      try {
+        const body = {
+          user_id: String(auth.currentUser.user.userId),
+          news_id: String(route.params.newsId)
+        };
+        await ReactService.getReacts(body);
+        
+        // Cập nhật trạng thái like
+        isLiked.value = !isLiked.value;
+        
+        // Cập nhật số lượng like
+        if (news.value) {
+          if (isLiked.value) {
+            news.value.likes = (news.value.likes || 0) + 1;
+          } else {
+            news.value.likes = Math.max(0, (news.value.likes || 0) - 1);
+          }
+        }
+      } catch (err) {
+        console.error('Error handling like:', err);
+        alert('Có lỗi xảy ra khi thích bài viết. Vui lòng thử lại!');
+      }
+    };
+
     // Watch for route changes
     watch(
       () => route.params.newsId,
@@ -480,6 +541,9 @@ export default {
         if (newId) {
           fetchDetail();
           fetchComments();
+          fetchSuggestNews();
+          fetchHotNews();
+          checkLikeStatus();
         }
       },
       { immediate: true }
@@ -490,6 +554,7 @@ export default {
       fetchComments();
       fetchHotNews();
       fetchSuggestNews();
+      checkLikeStatus();
     });
 
     return { 
@@ -499,6 +564,8 @@ export default {
       comments,
       newComment,
       email,
+      auth,
+      isLiked,
       formatDate, 
       formatCount,
       submitComment,
@@ -507,7 +574,9 @@ export default {
       isValidEmail,
       handleImageError,
       handleAdError,
-      scrollToTop
+      scrollToTop,
+      handleLike,
+      checkLikeStatus
     };
   },
 };

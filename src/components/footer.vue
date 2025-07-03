@@ -6,8 +6,8 @@
         <div class="col-12 mt-4">
           <h5 class="text-uppercase mb-3">Newsletter</h5>
           <p class="text-secondary">Stay updated with the latest news from GaNews</p>
-          <form class="d-flex w-100" @submit.prevent>
-            <input type="email" class="form-control me-2" placeholder="Enter your email" required />
+          <form class="d-flex w-100" @submit.prevent="subscribeNewsletter">
+            <input type="email" class="form-control me-2" placeholder="Enter your email" required v-model="email" @input="handleInput" />
             <button class="btn btn-info text-white" type="submit"><i class="bi bi-envelope"></i></button>
           </form>
         </div>
@@ -74,3 +74,27 @@
     </div>
   </footer>
 </template>
+<script setup>
+import { newsLetterService } from "@/services/index.js";
+import { ref } from "vue";
+
+const email = ref("");
+
+const handleInput = () => {
+  email.value = email.value.trim();
+}
+
+const subscribeNewsletter = async () => {
+  if (email.value) {
+    try {
+      const response = await newsLetterService.subscribeNewsletter(email.value);
+      email.value = "";
+      console.log(response);
+      alert("Đăng ký thành công !");
+    } catch (error) {
+      console.error("Error subscribing to newsletter:", error);
+      alert("Có lỗi xảy ra, hãy kiểm tra thông tin email !");
+    }
+  }
+}
+</script> 
