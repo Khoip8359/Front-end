@@ -101,6 +101,11 @@
                   </RouterLink>
                 </li>
                 <li>
+                  <RouterLink class="dropdown-item" :to="`/payment`">
+                    <i class="bi bi-person me-2"></i>Nạp thêm point
+                  </RouterLink>
+                </li>
+                <li>
                   <RouterLink class="dropdown-item" to="/changePassword">
                     <i class="bi bi-key me-2"></i>Đổi mật khẩu
                   </RouterLink>

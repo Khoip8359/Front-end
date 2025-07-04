@@ -68,9 +68,6 @@
                             :alt="news.title"
                             style="height: 180px; object-fit: cover;"
                           />
-                          <div class="position-absolute top-0 start-0 p-2">
-                            <span class="badge bg-primary">{{ index + 1 }}</span>
-                          </div>
                         </div>
                       </div>
                       

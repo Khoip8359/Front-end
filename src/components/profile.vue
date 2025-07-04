@@ -74,6 +74,7 @@
                         <select v-model="editForm.gender" class="form-select">
                           <option value="M">Nam</option>
                           <option value="F">Nữ</option>
+                          <option value="O">Khác</option>
                         </select>
                       </div>
 
@@ -150,7 +151,7 @@
                           <i class="bi bi-gender-female me-1"></i>
                           Nữ
                         </span>
-                        <span v-else class="text-muted">Không xác định</span>
+                        <span v-else class="text-muted">Khác</span>
                       </div>
                     </div>
 
