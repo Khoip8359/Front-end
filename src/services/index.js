@@ -1,11 +1,19 @@
-// Export tất cả services
-export { default as apiClient } from './api.js'
-export { loginService } from './loginService.js'
-export { newsService } from './NewsService.js'
-export { userProfileService } from './UserProfileService.js'
-export { commentService } from './commentService.js'  
-export { default as newsLetterService } from './newsLetterService.js'
-export { ReactService } from './React.js' 
+import apiClient from './api.js'
+import { loginService } from './loginService.js'
+import { newsService } from './NewsService.js'
+import { userProfileService } from './UserProfileService.js'
+import { commentService } from './commentService.js'
+import newsLetterService from './newsLetterService.js'
+import { ReactService } from './React.js'
+
+// Export named
+export { apiClient }
+export { loginService }
+export { newsService }
+export { userProfileService }
+export { commentService }
+export { newsLetterService }
+export { ReactService }
 
 // Export default cho backward compatibility
 export default {
