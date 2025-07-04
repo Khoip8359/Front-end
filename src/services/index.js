@@ -9,11 +9,11 @@ export { ReactService } from './React.js'
 
 // Export default cho backward compatibility
 export default {
-  apiClient: await import('./api.js').then(m => m.default),
-  loginService: await import('./loginService.js').then(m => m.loginService),
-  newsService: await import('./NewsService.js').then(m => m.newsService),
-  userProfileService: await import('./UserProfileService.js').then(m => m.userProfileService),
-  commentService: await import('./commentService.js').then(m => m.commentService),
-  newsLetterService: await import('./newsLetterService.js').then(m => m.default),
-  ReactService: await import('./React.js').then(m => m.ReactService)
+  apiClient,
+  loginService,
+  newsService,
+  userProfileService,
+  commentService,
+  newsLetterService,
+  ReactService
 } 
