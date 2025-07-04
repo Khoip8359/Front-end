@@ -45,7 +45,7 @@
         </div>
 
         <!-- Date Time Section -->
-        <RouterLink to="/time" @click="scrollToTop" class="col-lg-2 col-md-3 d-none d-md-block">
+        <RouterLink to="/time" @click="scrollToTop" class="col-lg-2 col-md-3">
           <div class="text-center">
             <div class="badge bg-light text-dark fs-6 px-3 py-2 shadow-sm mb-1">
               <i class="bi bi-calendar3 me-1"></i>
