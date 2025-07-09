@@ -199,7 +199,7 @@
               </h6>
             </div>
             <div class="card-body p-0">
-              <div v-if="hotNews.length === 0" class="text-center py-4">
+              <div v-if="suggestNews.length === 0" class="text-center py-4">
                 <i class="bi bi-newspaper display-4 text-muted"></i>
                 <p class="text-muted mt-2">Chưa có gợi ý cho bạn</p>
               </div>
@@ -219,7 +219,7 @@
                         style="width: 60px; height: 60px; object-fit: cover;"
                       >
                       <div class="position-absolute top-0 start-0 translate-middle">
-                        <span class="badge bg-danger rounded-pill">{{ index + 1 }}</span>
+                        <span class="badge bg-success rounded-pill">{{ index + 1 }}</span>
                       </div>
                     </div>
                     <div class="flex-grow-1 position-relative">
@@ -238,11 +238,97 @@
       </div>
     </div>
 
-    <!-- Floating Chat Button -->
-    <div class="position-fixed bottom-0 end-0 p-4" style="z-index: 1050;">
-      <button class="btn btn-primary rounded-circle shadow-lg chat-btn" data-bs-toggle="tooltip" data-bs-placement="left" title="Trò chuyện">
-        <i class="bi bi-chat-dots"></i>
-      </button>
+    <!-- Mobile Sections (visible only on mobile) -->
+    <div class="d-lg-none">
+      <!-- Hot News Section for Mobile -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-danger text-white py-3">
+          <h6 class="mb-0 fw-bold">
+            <i class="bi bi-fire me-2"></i>
+            Tin nóng
+          </h6>
+        </div>
+        <div class="card-body p-0">
+          <div v-if="hotNews.length === 0" class="text-center py-4">
+            <i class="bi bi-newspaper display-4 text-muted"></i>
+            <p class="text-muted mt-2">Chưa có tin nóng</p>
+          </div>
+          <div v-else>
+            <RouterLink
+              v-for="(news, index) in hotNews.slice(0, 3)"
+              :key="news.newsId"
+              :to="`/detail/${news.newsId}`"
+              class="text-decoration-none"
+              @click="scrollToTop"
+            >
+              <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
+                <div class="flex-shrink-0 me-3">
+                  <img 
+                    :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
+                    alt="thumbnail" 
+                    class="rounded"
+                    style="width: 60px; height: 60px; object-fit: cover;"
+                  >
+                  <div class="position-absolute top-0 start-0 translate-middle">
+                    <span class="badge bg-danger rounded-pill">{{ index + 1 }}</span>
+                  </div>
+                </div>
+                <div class="flex-grow-1 position-relative">
+                  <h6 class="mb-1 fw-semibold text-dark hot-news-title">{{ news.title }}</h6>
+                  <small class="text-muted">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ formatDate(news.createdDate) }}
+                  </small>
+                </div>
+              </div>
+            </RouterLink>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggest Section for Mobile -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-success text-white py-3">
+          <h6 class="mb-0 fw-bold">
+            💡 Gợi ý cho bạn
+          </h6>
+        </div>
+        <div class="card-body p-0">
+          <div v-if="suggestNews.length === 0" class="text-center py-4">
+            <i class="bi bi-newspaper display-4 text-muted"></i>
+            <p class="text-muted mt-2">Chưa có gợi ý cho bạn</p>
+          </div>
+          <div v-else>
+            <RouterLink
+              v-for="(news, index) in suggestNews.slice(0, 3)"
+              :key="news.newsId"
+              :to="`/detail/${news.newsId}`"
+              class="text-decoration-none"
+            >
+              <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
+                <div class="flex-shrink-0 me-3">
+                  <img 
+                    :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
+                    alt="thumbnail" 
+                    class="rounded"
+                    style="width: 60px; height: 60px; object-fit: cover;"
+                  >
+                  <div class="position-absolute top-0 start-0 translate-middle">
+                    <span class="badge bg-success rounded-pill">{{ index + 1 }}</span>
+                  </div>
+                </div>
+                <div class="flex-grow-1 position-relative">
+                  <h6 class="mb-1 fw-semibold text-dark hot-news-title">{{ news.title }}</h6>
+                  <small class="text-muted">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ formatDate(news.createdDate) }}
+                  </small>
+                </div>
+              </div>
+            </RouterLink>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

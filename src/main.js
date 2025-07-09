@@ -14,7 +14,6 @@ const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 
-// Khôi phục trạng thái đăng nhập khi ứng dụng khởi động
 const authStore = useAuthStore()
 authStore.restoreAuth()
 

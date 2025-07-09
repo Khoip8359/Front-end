@@ -7,7 +7,12 @@ import Profile from '@/components/profile.vue'
 import ChangePassword from '@/components/changePassword.vue'
 import AuthForm from '@/components/AuthForm.vue'
 import Time from '@/views/time.vue'
-
+import Payment from '@/components/payment.vue'
+import Reporter from '@/views/reporter.vue'
+import Censor from '@/views/censor.vue'
+import DashBoard from '@/components/dashBoard.vue'
+import Write from '@/components/write.vue'
+  
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -39,6 +44,11 @@ const router = createRouter({
           path: '/changePassword',
           name: 'changePassword',
           component: ChangePassword
+        },
+        {
+          path: '/payment',
+          name: 'payment',
+          component: Payment
         }
       ]
     },
@@ -50,6 +60,24 @@ const router = createRouter({
     {
       path: '/time',
       component: Time,
+    },
+    {
+      path: '/reporter',
+      component: Reporter,
+      children: [
+        {
+          path: 'dashboard',
+          component: DashBoard
+        },
+        {
+          path: 'write',
+          component: Write
+        }
+      ]
+    },
+    {
+      path: '/censor',
+      component: Censor,
     }
   ],
 })

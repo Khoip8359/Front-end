@@ -550,7 +550,6 @@ export default {
     );
 
     onMounted(() => {
-      fetchDetail();
       fetchComments();
       fetchHotNews();
       fetchSuggestNews();

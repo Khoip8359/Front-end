@@ -111,7 +111,7 @@
                   </RouterLink>
                 </li>
                 <li v-if="authStore.isReporter">
-                  <RouterLink class="dropdown-item" to="/reporter">
+                  <RouterLink class="dropdown-item" to="/reporter/dashboard">
                     <i class="bi bi-pencil-square me-2"></i>Quản lý bài viết
                   </RouterLink>
                 </li>

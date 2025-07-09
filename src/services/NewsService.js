@@ -87,5 +87,15 @@ export const newsService = {
       console.error('getNewsByDate error:', error)
       throw new Error('Không thể tải tin tức theo ngày')
     }
+  },
+
+  async getNewsByUser(userId){
+    try{
+      const response = await apiClient.get(`/api/news/${userId}`)
+      return response.data
+    } catch (error) {
+      console.error('getNewsByCategory error:', error)
+      throw new Error('Không thể tải tin tức theo danh mục')
+    }
   }
 }
