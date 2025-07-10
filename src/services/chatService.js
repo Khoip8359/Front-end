@@ -9,7 +9,7 @@ let currentUserId = null;
 const getWebSocketUrl = () => {
   if (import.meta.env.PROD) {
     // Production: use the same domain with HTTPS
-    return `${window.location.protocol === 'https:' ? 'https:' : 'http:'}//${window.location.host}/ws-chat`;
+    return `https://ganews.onrender.com/ws-chat`;
   } else {
     // Development: use relative URL
     return '/ws-chat';
