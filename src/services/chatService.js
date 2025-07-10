@@ -5,6 +5,17 @@ import apiClient from './api';
 let stompClient = null;
 let currentUserId = null;
 
+// Get WebSocket URL based on environment
+const getWebSocketUrl = () => {
+  if (import.meta.env.PROD) {
+    // Production: use the same domain with HTTPS
+    return `${window.location.protocol === 'https:' ? 'https:' : 'http:'}//${window.location.host}/ws-chat`;
+  } else {
+    // Development: use relative URL
+    return '/ws-chat';
+  }
+};
+
 export const chatService = {
   setCurrentUserId(userId) {
     currentUserId = userId;
@@ -12,12 +23,18 @@ export const chatService = {
   },
 
   connect(onMessageReceived) {
-    const socket = new SockJS('http://localhost:8080/ws-chat');
+    const wsUrl = getWebSocketUrl();
+    console.log('Connecting to WebSocket:', wsUrl);
+    
+    const socket = new SockJS(wsUrl);
     stompClient = Stomp.over(socket);
     stompClient.connect({}, () => {
+      console.log('WebSocket connected successfully');
       stompClient.subscribe('/topic/messages', (message) => {
         onMessageReceived(JSON.parse(message.body));
       });
+    }, (error) => {
+      console.error('WebSocket connection error:', error);
     });
   },
 

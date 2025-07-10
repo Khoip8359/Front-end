@@ -15,7 +15,21 @@ export default defineConfig({
     port: 5173,
     strictPort: false,
     open: false,
-    cors: true
+    cors: true,
+    https: false,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false
+      },
+      '/ws-chat': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+        ws: true
+      }
+    }
   },
   resolve: {
     alias: {
