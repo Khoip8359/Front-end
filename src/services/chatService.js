@@ -3,8 +3,14 @@ import { Stomp } from '@stomp/stompjs';
 import apiClient from './api';
 
 let stompClient = null;
+let currentUserId = null;
 
 export const chatService = {
+  setCurrentUserId(userId) {
+    currentUserId = userId;
+    console.log('ChatService: currentUserId set to', userId);
+  },
+
   connect(onMessageReceived) {
     const socket = new SockJS('http://localhost:8080/ws-chat');
     stompClient = Stomp.over(socket);
@@ -17,6 +23,10 @@ export const chatService = {
 
   sendMessage(message) {
     if (stompClient && stompClient.connected) {
+      // Đảm bảo message có trường sender
+      if (!message.sender && currentUserId) {
+        message.sender = currentUserId.toString();
+      }
       stompClient.send('/app/chat', {}, JSON.stringify(message));
     }
   },
@@ -33,11 +43,37 @@ export const chatService = {
 
   async fetchChatHistoryByUser(userId) {
     try {
-      const response = await apiClient.get(`/api/help-detail/history/user/${userId}`)
-      return response.data
+      const res = await fetch(`http://localhost:8080/api/help-detail/history/user/${userId}`);
+      if (!res.ok) throw new Error('Không lấy được lịch sử chat');
+      return await res.json();
     } catch (error) {
-      console.error('getNewsDetail error:', error)
-      throw new Error('Không thể tải lịch sử chat')
+      console.error('fetchChatHistoryByUser error:', error);
+      throw error;
+    }
+  },
+
+  async fetchConversationsByUserId(userId) {
+    try {
+      const res = await fetch(`http://localhost:8080/api/help-detail/conversations/${userId}`);
+      if (!res.ok) throw new Error('Không lấy được danh sách hội thoại');
+      return await res.json();
+    } catch (error) {
+      console.error('fetchConversationsByUserId error:', error);
+      throw error;
+    }
+  },
+
+  async fetchChatHistoryByMerge(merge) {
+    try {
+      if (!currentUserId) {
+        throw new Error('User chưa đăng nhập');
+      }
+      const res = await fetch(`http://localhost:8080/api/help-detail/history/conversation/${merge}?currentUserId=${currentUserId}`);
+      if (!res.ok) throw new Error('Không lấy được lịch sử chat');
+      return await res.json();
+    } catch (error) {
+      console.error('fetchChatHistoryByMerge error:', error);
+      throw error;
     }
   }
 }; 
