@@ -44,10 +44,10 @@
               <div v-for="conv in conversations" :key="conv.merge" class="conversation-item mb-2">
                 <button @click="selectConversation(conv.merge)" class="btn btn-outline-primary btn-sm w-100 text-start conversation-btn">
                   <i class="bi bi-chat me-2"></i>
-                  Hội thoại với user {{ getOtherUserId(conv.merge) }}
+              Hội thoại với user {{ getOtherUserId(conv.merge) }}
                   <span class="badge bg-secondary ms-2">{{ conv.merge }}</span>
-                </button>
-              </div>
+            </button>
+          </div>
               <div v-if="conversations.length === 0" class="text-center text-muted py-3">
                 <i class="bi bi-inbox display-6 text-muted"></i>
                 <p class="mt-2 mb-0">Chưa có hội thoại nào</p>

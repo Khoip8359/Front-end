@@ -33,33 +33,31 @@ export const chatService = {
 
   async fetchChatHistory(userId) {
     try {
-        const response = await apiClient.get(`/api/help-detail/history/user/${userId}`)
-        return response.data
-      } catch (error) {
-        console.error('getNewsDetail error:', error)
-        throw new Error('Không thể tải lịch sử chat')
-      }
+      const response = await apiClient.get(`/api/help-detail/history/user/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('fetchChatHistory error:', error);
+      throw new Error('Không thể tải lịch sử chat');
+    }
   },
 
   async fetchChatHistoryByUser(userId) {
     try {
-      const res = await fetch(`http://localhost:8080/api/help-detail/history/user/${userId}`);
-      if (!res.ok) throw new Error('Không lấy được lịch sử chat');
-      return await res.json();
+      const response = await apiClient.get(`/api/help-detail/history/user/${userId}`);
+      return response.data;
     } catch (error) {
       console.error('fetchChatHistoryByUser error:', error);
-      throw error;
+      throw new Error('Không lấy được lịch sử chat');
     }
   },
 
   async fetchConversationsByUserId(userId) {
     try {
-      const res = await fetch(`http://localhost:8080/api/help-detail/conversations/${userId}`);
-      if (!res.ok) throw new Error('Không lấy được danh sách hội thoại');
-      return await res.json();
+      const response = await apiClient.get(`/api/help-detail/conversations/${userId}`);
+      return response.data;
     } catch (error) {
       console.error('fetchConversationsByUserId error:', error);
-      throw error;
+      throw new Error('Không lấy được danh sách hội thoại');
     }
   },
 
@@ -68,12 +66,11 @@ export const chatService = {
       if (!currentUserId) {
         throw new Error('User chưa đăng nhập');
       }
-      const res = await fetch(`http://localhost:8080/api/help-detail/history/conversation/${merge}?currentUserId=${currentUserId}`);
-      if (!res.ok) throw new Error('Không lấy được lịch sử chat');
-      return await res.json();
+      const response = await apiClient.get(`/api/help-detail/history/conversation/${merge}?currentUserId=${currentUserId}`);
+      return response.data;
     } catch (error) {
       console.error('fetchChatHistoryByMerge error:', error);
-      throw error;
+      throw new Error('Không lấy được lịch sử chat');
     }
   }
 }; 
