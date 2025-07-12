@@ -19,7 +19,7 @@
         <RouterLink :to="`/detail/${pagedNews[0].newsId}`" class="featured-link">
           <div class="featured-card">
             <div class="featured-image">
-              <img :src="getImg(pagedNews[0].thumbnail)" alt="thumbnail" />
+              <img :src="getImageUrl(pagedNews[0].thumbnail)" alt="thumbnail" />
               <div class="featured-overlay">
                 <div class="featured-badge">{{ pagedNews[0].category.categoryName }}</div>
               </div>
@@ -53,7 +53,7 @@
           <RouterLink :to="`/detail/${item.newsId}`" class="news-link">
             <article class="news-card">
               <div class="news-image">
-                <img :src="getImg(item.thumbnail)" alt="thumbnail" />
+                <img :src="getImageUrl(item.thumbnail)" alt="thumbnail" />
                 <div class="news-badge">{{ item.category.categoryName }}</div>
               </div>
               <div class="news-content">
@@ -118,10 +118,12 @@
   import { newsService } from '@/services'
   import { useAuthStore } from '@/stores/auth'
   import { RouterLink } from 'vue-router'
+  import { getImageUrl } from '@/services/api'
   
   const newsList = ref([])
   const loading = ref(false)
   const error = ref(null)
+  const currentPage = ref(1)
   
   const authStore = useAuthStore()
   const userId = computed(() => authStore.user?.user?.userId)
@@ -139,18 +141,18 @@
     }
   })
   
-  const pageSize = 4
-  const currentPage = ref(1)
-  const totalPages = computed(() => Math.ceil(newsList.value.length / pageSize))
-  
-  const pagedNews = computed(() => {
-    const start = (currentPage.value - 1) * pageSize
-    return newsList.value.slice(start, start + pageSize)
+  const pageSize = computed(() => currentPage.value === 1 ? 4 : 6)
+
+  const totalPages = computed(() => {
+    if (newsList.value.length <= 4) return 1
+    return 1 + Math.ceil((newsList.value.length - 4) / 6)
   })
-  
-  function getImg(img) {
-    return `/img/${img}`
-  }
+
+  const pagedNews = computed(() => {
+    const start = (currentPage.value === 1) ? 0 : 4 + (currentPage.value - 2) * 6
+    const size = pageSize.value
+    return newsList.value.slice(start, start + size)
+  })
   
   function formatDate(dateStr) {
     const d = new Date(dateStr)

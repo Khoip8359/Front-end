@@ -248,20 +248,20 @@ const updateDateTime = () => {
 // Handle logout
 const handleLogout = () => {
   authStore.logout()
-  router.push('/')
+  router.push('/login')
 }
 </script>
 
 <style scoped>
 .top-layer-banner {
   position: relative;
-  z-index: 8888;
+  z-index: 999;
 }
 
 .sticky-top-bar {
   position: sticky;
   top: 0;
-  z-index: 9999;
+  z-index: 1000;
   width: 100%;
   background: white;
 }
@@ -327,7 +327,7 @@ const handleLogout = () => {
 
 /* Đảm bảo dropdown menus hiển thị đúng */
 .dropdown-menu {
-  z-index: 10000;
+  z-index: 1001;
 }
 
 /* Smooth animations */

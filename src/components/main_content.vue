@@ -63,7 +63,7 @@
                       <div class="col-md-4">
                         <div class="position-relative overflow-hidden rounded">
                           <img
-                            :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/400x250'"
+                            :src="news.thumbnail ? getImageUrl(news.thumbnail) : 'https://placehold.co/400x250'"
                             class="img-fluid w-100 news-thumbnail"
                             :alt="news.title"
                             style="height: 180px; object-fit: cover;"
@@ -169,7 +169,7 @@
                   <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
                     <div class="flex-shrink-0 me-3">
                       <img 
-                        :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
+                        :src="news.thumbnail ? getImageUrl(news.thumbnail) : 'https://placehold.co/60x60'" 
                         alt="thumbnail" 
                         class="rounded"
                         style="width: 60px; height: 60px; object-fit: cover;"
@@ -213,7 +213,7 @@
                   <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
                     <div class="flex-shrink-0 me-3">
                       <img 
-                        :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
+                        :src="news.thumbnail ? getImageUrl(news.thumbnail) : 'https://placehold.co/60x60'" 
                         alt="thumbnail" 
                         class="rounded"
                         style="width: 60px; height: 60px; object-fit: cover;"
@@ -264,7 +264,7 @@
               <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
                 <div class="flex-shrink-0 me-3">
                   <img 
-                    :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
+                    :src="news.thumbnail ? getImageUrl(news.thumbnail) : 'https://placehold.co/60x60'" 
                     alt="thumbnail" 
                     class="rounded"
                     style="width: 60px; height: 60px; object-fit: cover;"
@@ -308,7 +308,7 @@
               <div class="d-flex align-items-center p-3 border-bottom hot-news-item">
                 <div class="flex-shrink-0 me-3">
                   <img 
-                    :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/60x60'" 
+                    :src="news.thumbnail ? getImageUrl(news.thumbnail) : 'https://placehold.co/60x60'" 
                     alt="thumbnail" 
                     class="rounded"
                     style="width: 60px; height: 60px; object-fit: cover;"
@@ -336,6 +336,7 @@
 <script>
 import { ref, onMounted, computed } from 'vue'
 import { newsService } from '../services/NewsService.js'
+import { getImageUrl } from '@/services/api'
 
 export default {
   setup() {
@@ -431,7 +432,8 @@ export default {
       goToPage,
       scrollToTop,
       formatDate,
-      visiblePages
+      visiblePages,
+      getImageUrl
     }
   }
 }

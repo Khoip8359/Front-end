@@ -8,8 +8,10 @@ let currentUserId = null;
 // Get WebSocket URL based on environment
 const getWebSocketUrl = () => {
   if (import.meta.env.PROD) {
-    // Production: use the same domain with HTTPS
-    return `https://ganews.onrender.com/ws-chat`;
+    //Test local 
+    return 'http://localhost:8080/ws-chat'
+
+    // return `https://ganews.onrender.com/ws-chat`;
   } else {
     // Development: use relative URL
     return '/ws-chat';

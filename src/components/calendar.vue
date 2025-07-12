@@ -83,7 +83,7 @@
             <div v-else-if="newsByDate.length > 0" class="news-list">
               <div v-for="news in newsByDate" :key="news.newsId" class="news-item" @click="openNews(news)">
                 <div class="news-thumbnail">
-                  <img v-if="news.thumbnail" :src="news.thumbnail ? `./img/${news.thumbnail}` : 'https://placehold.co/400x250'" :alt="news.title" class="img-fluid" />
+                  <img v-if="news.thumbnail" :src="news.thumbnail ? getImageUrl(news.thumbnail) : 'https://placehold.co/400x250'" :alt="news.title" class="img-fluid" />
                   <div v-else class="thumbnail-placeholder">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -150,6 +150,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { newsService } from '@/services/NewsService.js'
 import { useRouter } from 'vue-router'
+import { getImageUrl } from '@/services/api'
 
 const router = useRouter()
 

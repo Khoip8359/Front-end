@@ -3,7 +3,10 @@
     <!-- Top Bar -->
     <top_bar></top_bar>
 
-    <RouterView></RouterView>
+    <!-- Main Content -->
+    <div class="main-content">
+      <RouterView></RouterView>
+    </div>
     
     <!-- Footer -->
     <Footer></Footer>
@@ -151,7 +154,6 @@ const currentUserId = computed(() => {
   return auth.currentUser?.user?.userId || null;
 });
 
-// Watcher để theo dõi khi currentUserId thay đổi
 watch(currentUserId, async (newUserId) => {
   if (newUserId) {
     console.log('User đã đăng nhập, khởi tạo chat service');
@@ -170,6 +172,7 @@ watch(currentUserId, async (newUserId) => {
 async function initializeChat() {
   if (!currentUserId.value) {
     console.warn('User chưa đăng nhập, không thể khởi tạo chat');
+    alert("Vui lòng đăng nhập để chat")
     return;
   }
   
@@ -199,11 +202,6 @@ async function initializeChat() {
     messages.value.push(msg);
   });
 }
-
-onMounted(() => {
-  // Khởi tạo websocket connection khi component mount
-  // Chat initialization sẽ được xử lý bởi watcher
-});
 
 function selectConversation(merge) {
   selectedConversation.value = merge;
@@ -561,5 +559,13 @@ function isCurrentUserMessage(msg) {
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 123, 255, 0.7);
+}
+
+/* Main content styling */
+.main-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 200px); /* Adjust based on header/footer height */
 }
 </style>

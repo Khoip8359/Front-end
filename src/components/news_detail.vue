@@ -63,7 +63,7 @@
             <!-- Featured Image -->
             <div class="mb-5 text-center" v-if="news.thumbnail">
               <img 
-                :src="`/img/${news.thumbnail}`" 
+                :src="getImageUrl(news.thumbnail)" 
                 class="img-fluid rounded-4 shadow" 
                 alt="Article Thumbnail"
                 style="max-height: 400px; object-fit: cover; width: 100%;"
@@ -170,7 +170,7 @@
                     </div>
                     <img 
                       v-else
-                      :src="`/img/${article.thumbnail}`" 
+                      :src="getImageUrl(article.thumbnail)" 
                       class="img-fluid rounded-3 mb-2"
                       style="height: 100px; object-fit: cover; width: 100%;"
                       alt="Suggested article"
@@ -215,7 +215,7 @@
                   <div class="d-flex align-items-center p-3 border-bottom hot-news-item position-relative">
                     <div class="flex-shrink-0 me-3 position-relative">
                       <img 
-                        :src="hotArticle.thumbnail ? `/img/${hotArticle.thumbnail}` : 'https://placehold.co/60x60'" 
+                        :src="hotArticle.thumbnail ? getImageUrl(hotArticle.thumbnail) : 'https://placehold.co/60x60'" 
                         alt="thumbnail" 
                         class="rounded"
                         style="width: 60px; height: 60px; object-fit: cover;"
@@ -332,6 +332,7 @@ import { commentService } from "@/services/commentService.js";
 import { useAuthStore } from '@/stores/auth.js';
 import { newsLetterService } from "@/services/index.js";
 import { ReactService } from "@/services/React.js";
+import { getImageUrl } from '@/services/api'
 
 export default {
   setup() {
@@ -575,7 +576,8 @@ export default {
       handleAdError,
       scrollToTop,
       handleLike,
-      checkLikeStatus
+      checkLikeStatus,
+      getImageUrl
     };
   },
 };
