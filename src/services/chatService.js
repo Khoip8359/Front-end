@@ -9,9 +9,8 @@ let currentUserId = null;
 const getWebSocketUrl = () => {
   if (import.meta.env.PROD) {
     //Test local 
-    return 'http://localhost:8080/ws-chat'
-
-    // return `https://ganews.onrender.com/ws-chat`;
+    // return 'http://localhost:8080/ws-chat'
+    return `https://ganews.onrender.com/ws-chat`;
   } else {
     // Development: use relative URL
     return '/ws-chat';
