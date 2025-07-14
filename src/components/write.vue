@@ -109,17 +109,6 @@
                     </option>
                   </select>
                 </div>
-                
-                <div class="col-md-6">
-                  <label class="form-label fw-bold text-dark">
-                    <i class="bi bi-eye me-2 text-primary"></i>
-                    Trạng thái
-                  </label>
-                  <select v-model="form.status" class="form-select form-select-lg">
-                    <option value="draft">Nháp</option>
-                    <option value="pending">Gửi để kiểm duyệt</option>
-                  </select>
-                </div>
               </div>
 
               <!-- Point Section -->
@@ -196,15 +185,34 @@
                       >
                         <i class="bi bi-trash"></i>
                       </button>
+                      <button 
+                        type="button"
+                        @click="() => handleSectionImageUpload(index)"
+                        class="btn btn-sm btn-outline-secondary ms-2"
+                      >
+                        <i class="bi bi-image"></i> Chèn ảnh
+                      </button>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        :ref="el => sectionImageInputs[index] = el" 
+                        style="display: none" 
+                        @change="event => handleSectionImageChange(event, index)"
+                      />
                     </div>
-                    
-                    <textarea
-                      v-model="form.details[index]"
-                      class="form-control"
-                      rows="6"
-                      :placeholder="`Nhập nội dung phần ${index + 1}...`"
-                      required
-                    ></textarea>
+                    <div v-if="isImageSection(section)" class="mb-2">
+                      <img :src="section" alt="Ảnh nội dung" style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid #eee;" />
+                      <button type="button" class="btn btn-sm btn-outline-warning mt-2" @click="clearSectionImage(index)"><i class="bi bi-x"></i> Xóa ảnh</button>
+                    </div>
+                    <div v-else>
+                      <textarea
+                        v-model="form.details[index]"
+                        class="form-control"
+                        rows="6"
+                        :placeholder="`Nhập nội dung phần ${index + 1}...`"
+                        required
+                      ></textarea>
+                    </div>
                   </div>
                 </div>
                 
@@ -229,7 +237,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import newsCreateService from '../services/NewsCreateService'
@@ -252,6 +260,33 @@ const form = ref({
 
 const categories = ref([])
 const isSubmitting = ref(false)
+const sectionImageInputs = ref([])
+
+function isImageSection(section) {
+  return typeof section === 'string' && /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(section)
+}
+
+function handleSectionImageUpload(index) {
+  if (sectionImageInputs.value[index]) {
+    sectionImageInputs.value[index].value = '' // reset input
+    sectionImageInputs.value[index].click()
+  }
+}
+
+async function handleSectionImageChange(event, index) {
+  const file = event.target.files[0]
+  if (!file) return
+  try {
+    const imageUrl = await uploadService.uploadImage(file)
+    form.value.details[index] = imageUrl
+  } catch (err) {
+    alert('Upload ảnh thất bại!')
+  }
+}
+
+function clearSectionImage(index) {
+  form.value.details[index] = ''
+}
 
 // Computed properties
 const isFormValid = computed(() => {

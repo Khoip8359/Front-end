@@ -144,37 +144,7 @@
               <i class="bi bi-pencil-square me-3"></i>
               <span>Viết bài viết mới</span>
             </RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink 
-              to="/reporter/published" 
-              class="nav-link sidebar-link"
-              :class="{ 'active': $route.path.includes('/published') }"
-            >
-              <i class="bi bi-check-circle me-3"></i>
-              <span>Bài viết đã xuất bản</span>
-            </RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink 
-              to="/reporter/pending" 
-              class="nav-link sidebar-link"
-              :class="{ 'active': $route.path.includes('/pending') }"
-            >
-              <i class="bi bi-clock me-3"></i>
-              <span>Bài viết chờ duyệt</span>
-            </RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink 
-              to="/reporter/rejected" 
-              class="nav-link sidebar-link"
-              :class="{ 'active': $route.path.includes('/rejected') }"
-            >
-              <i class="bi bi-x-circle me-3"></i>
-              <span>Bài viết bị từ chối</span>
-            </RouterLink>
-          </li>
+          </li>4
           <li class="nav-item">
             <hr class="sidebar-divider">
           </li>

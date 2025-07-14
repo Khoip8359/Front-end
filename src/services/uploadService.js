@@ -7,11 +7,11 @@ export default {
     const response = await api.post('/api/upload/image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
-    // Nếu backend trả về object { url: ... }
-    if (typeof response.data === 'object' && response.data.url) {
+    // Cloudinary trả về object với url, publicId, message, success
+    if (response.data && response.data.url) {
       return response.data.url
     }
-    // Nếu trả về chuỗi
+    // Fallback nếu response không đúng format
     return response.data
   }
 } 

@@ -7,17 +7,7 @@
         <div class="sticky-top" style="top: 100px;">
           <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-0">
-              <img src="/img/qc1.jpg" class="img-fluid rounded" alt="Advertisement" />
-            </div>
-          </div>
-          
-          <div class="card border-0 shadow-sm">
-            <div class="card-body text-center">
-              <h6 class="card-title mb-3">📢 Quảng cáo</h6>
-              <div class="bg-light rounded p-4">
-                <i class="bi bi-megaphone display-6 text-muted mb-2"></i>
-                <p class="text-muted small mb-0">Không gian quảng cáo</p>
-              </div>
+              <img src="https://res.cloudinary.com/ddqlu7sc3/image/upload/v1752454761/qc1_jompx2.jpg" class="img-fluid rounded" alt="Advertisement" />
             </div>
           </div>
         </div>

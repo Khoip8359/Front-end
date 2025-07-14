@@ -110,6 +110,14 @@
           </button>
         </div>
       </nav>
+
+      <div v-if="!loading && !error && newsList.length === 0" class="text-center py-5">
+        <i class="bi bi-journal-x display-3 text-muted mb-3"></i>
+        <h4 class="mb-3">Không có bài viết nào</h4>
+        <button class="btn btn-primary btn-lg" @click="$router.push('/reporter/write')">
+          <i class="bi bi-plus-circle me-2"></i>Viết bài mới
+        </button>
+      </div>
     </div>
   </template>
   

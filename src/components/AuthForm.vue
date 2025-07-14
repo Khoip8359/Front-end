@@ -3,7 +3,7 @@
     <div class="auth-card">
       <!-- Header -->
       <div class="auth-header text-center mb-4">
-        <img src="/img/logo.png" alt="Logo" class="auth-logo mb-3" />
+        <img src="https://res.cloudinary.com/ddqlu7sc3/image/upload/v1752454760/logo_xf1o3w.png" alt="Logo" class="auth-logo mb-3" />
         <h2 class="auth-title">Chào mừng bạn</h2>
         <p class="auth-subtitle">Đăng nhập hoặc tạo tài khoản mới</p>
       </div>

@@ -75,7 +75,10 @@
             <div class="article-content">
               <div v-if="news.details && news.details.length > 0">
                 <div v-for="(detail, index) in news.details" :key="index" class="mb-4">
-                  <div class="fs-5 lh-lg" v-html="detail"></div>
+                  <div v-if="isImageSection(detail)" class="d-flex justify-content-center my-4">
+                    <img :src="detail" class="img-fluid rounded-3 shadow" style="width: 600px; max-width: 100%; max-height: 350px; object-fit: cover; display: block; margin: 0 auto;" alt="Ảnh nội dung" />
+                  </div>
+                  <div v-else class="fs-5 lh-lg">{{ detail }}</div>
                 </div>
               </div>
               <div v-else class="text-center py-4">
@@ -297,7 +300,7 @@
             <div class="p-4">
               <h6 class="text-muted mb-3">Quảng cáo</h6>
               <img 
-                src="/img/qc2.jpg" 
+                src="https://res.cloudinary.com/ddqlu7sc3/image/upload/v1752454761/qc2_kkkibo.jpg" 
                 alt="Advertisement" 
                 class="img-fluid rounded-3"
                 style="max-height: 200px; object-fit: cover;"
@@ -535,6 +538,10 @@ export default {
       }
     };
 
+    function isImageSection(section) {
+      return typeof section === 'string' && /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(section)
+    }
+
     // Watch for route changes
     watch(
       () => route.params.newsId,
@@ -577,7 +584,8 @@ export default {
       scrollToTop,
       handleLike,
       checkLikeStatus,
-      getImageUrl
+      getImageUrl,
+      isImageSection
     };
   },
 };
