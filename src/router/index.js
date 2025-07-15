@@ -10,8 +10,9 @@ import Time from '@/views/time.vue'
 import Payment from '@/components/payment.vue'
 import Reporter from '@/views/reporter.vue'
 import Censor from '@/views/censor.vue'
-import DashBoard from '@/components/dashBoard.vue'
+import reporterDashboard from '@/components/reporterDashboard.vue'
 import Write from '@/components/write.vue'
+import censorDashboard from '@/components/censorDashboard.vue'
   
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,7 +68,7 @@ const router = createRouter({
       children: [
         {
           path: 'dashboard',
-          component: DashBoard
+          component: reporterDashboard
         },
         {
           path: 'write',
@@ -78,6 +79,12 @@ const router = createRouter({
     {
       path: '/censor',
       component: Censor,
+      children:[
+        {
+          path:"dashboard",
+          component: censorDashboard
+        }
+      ]
     }
   ],
 })

@@ -144,7 +144,7 @@
                       </h6>
                       <div class="d-flex justify-content-between align-items-center">
                         <span class="text-muted">Point hiện tại:</span>
-                        <span class="fw-bold text-success">{{ auth.userProfile?.point || 0 }} point</span>
+                        <span class="fw-bold text-success">{{ auth.userProfile?.remainingPoint || 0 }} point</span>
                       </div>
                       <div class="d-flex justify-content-between align-items-center mt-2">
                         <span class="text-muted">Point sẽ trừ:</span>
@@ -152,7 +152,7 @@
                           {{ form.paidPoint }} point
                         </span>
                       </div>
-                      <div v-if="form.paidPoint > (auth.userProfile?.point || 0)" class="alert alert-warning mt-2 mb-0 py-2">
+                      <div v-if="form.paidPoint > (auth.userProfile?.remainingPoint || 0)" class="alert alert-warning mt-2 mb-0 py-2">
                         <i class="bi bi-exclamation-triangle me-2"></i>
                         <small>Point không đủ! Vui lòng nạp thêm point.</small>
                       </div>
@@ -359,7 +359,7 @@ const publishNews = async () => {
     alert('Vui lòng điền đầy đủ thông tin bắt buộc')
     return
   }
-  if (form.value.paidPoint > (auth.userProfile?.point || 0)) {
+  if (form.value.paidPoint > (auth.userProfile?.remainingPoint || 0)) {
     alert('Point không đủ! Vui lòng nạp thêm point hoặc giảm số point thưởng.')
     return
   }

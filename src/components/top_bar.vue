@@ -154,7 +154,7 @@
                 </li>
                 
                 <li v-if="authStore.isCensor">
-                  <RouterLink class="dropdown-item modern-dropdown-item" to="/censor">
+                  <RouterLink class="dropdown-item modern-dropdown-item" to="/censor/dashboard">
                     <i class="bi bi-shield-check me-3"></i>
                     <span>Kiểm duyệt</span>
                   </RouterLink>
