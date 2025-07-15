@@ -9,13 +9,13 @@
             <!-- Like Button -->
             <div 
               :class="[
-                'btn btn-lg d-flex flex-column align-items-center py-3 shadow-sm position-relative',
+                'btn btn-lg d-flex flex-column align-items-center py-3 shadow-sm position-relative btn-sm py-2',
                 isLiked ? 'btn-primary' : 'btn-outline-primary'
               ]"
               @click="handleLike"
               style="cursor: pointer;"
             >
-              <i class="bi bi-hand-thumbs-up-fill fs-4 mb-1"></i>
+              <i class="bi bi-hand-thumbs-up-fill fs-5 mb-1"></i>
               <small class="fw-bold">Thích</small>
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 {{ formatCount(news.likes || 0) }}
@@ -23,8 +23,8 @@
             </div>
             
             <!-- Share Button -->
-            <div class="btn btn-info btn-lg d-flex flex-column align-items-center py-3 shadow-sm" @click="shareArticle">
-              <i class="bi bi-share fs-4 mb-1"></i>
+            <div class="btn btn-info btn-lg d-flex flex-column align-items-center py-3 shadow-sm position-relative btn-sm py-2" @click="showShareModal = true">
+              <i class="bi bi-share fs-5 mb-1"></i>
               <small class="fw-bold">Chia sẻ</small>
             </div>
           </div>
@@ -325,10 +325,96 @@
       </div>
     </div>
   </div>
+
+  <!-- Share Modal -->
+  <teleport to="body">
+    <div v-if="showShareModal" class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" @click="showShareModal = false">
+      <div class="modal-dialog modal-dialog-centered" @click.stop>
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header border-0 bg-primary text-white">
+            <h5 class="modal-title fw-bold">
+              <i class="bi bi-share me-2"></i>
+              Chia sẻ bài viết
+            </h5>
+            <button type="button" class="btn-close btn-close-white" @click="showShareModal = false"></button>
+          </div>
+          <div class="modal-body p-4">
+            <!-- Native Share API -->
+            <div v-if="canUseNativeShare" class="mb-4">
+              <button @click="nativeShare" class="btn btn-primary w-100 py-3 mb-3">
+                <i class="bi bi-share-fill me-2"></i>
+                Chia sẻ với ứng dụng
+              </button>
+            </div>
+            <!-- Social Media Buttons -->
+            <div class="row g-3 mb-4">
+              <div class="col-6">
+                <button @click="shareToFacebook" class="btn btn-outline-primary w-100 py-1 btn-sm">
+                  <i class="bi bi-facebook me-2"></i>
+                  Facebook
+                </button>
+              </div>
+              <div class="col-6">
+                <button @click="shareToTwitter" class="btn btn-outline-info w-100 py-1 btn-sm">
+                  <i class="bi bi-twitter-x me-2"></i>
+                  Twitter
+                </button>
+              </div>
+              <div class="col-6">
+                <button @click="shareToWhatsApp" class="btn btn-outline-success w-100 py-1 btn-sm">
+                  <i class="bi bi-whatsapp me-2"></i>
+                  WhatsApp
+                </button>
+              </div>
+              <div class="col-6">
+                <button @click="shareToTelegram" class="btn btn-outline-primary w-100 py-1 btn-sm">
+                  <i class="bi bi-telegram me-2"></i>
+                  Telegram
+                </button>
+              </div>
+            </div>
+            <!-- Copy Link Section -->
+            <div class="border-top pt-4">
+              <h6 class="fw-bold mb-3">
+                <i class="bi bi-link-45deg me-2"></i>
+                Sao chép link
+              </h6>
+              <div class="input-group">
+                <input 
+                  type="text" 
+                  :value="currentUrl" 
+                  class="form-control" 
+                  readonly
+                  ref="urlInput"
+                />
+                <button @click="copyToClipboard" class="btn btn-outline-secondary">
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+              <small class="text-muted mt-2 d-block">
+                <i class="bi bi-info-circle me-1"></i>
+                Link sẽ được sao chép vào clipboard
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </teleport>
+
+  <!-- Success Toast -->
+  <div v-if="showToast" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div class="toast show bg-success text-white">
+      <div class="toast-body d-flex align-items-center">
+        <i class="bi bi-check-circle me-2"></i>
+        {{ toastMessage }}
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { newsService } from "@/services/NewsService";
 import { commentService } from "@/services/commentService.js";
@@ -349,6 +435,11 @@ export default {
     const email = ref('');
     const auth = useAuthStore();
     const isLiked = ref(false);
+    const showShareModal = ref(false);
+    const showToast = ref(false);
+    const toastMessage = ref('');
+    const currentUrl = ref('');
+    const canUseNativeShare = ref(false);
 
     const fetchDetail = async () => {
       try {
@@ -418,25 +509,82 @@ export default {
       }
     };
 
-    const shareArticle = async () => {
+    // Share functionality
+    const initShareFeatures = () => {
+      currentUrl.value = window.location.href;
+      canUseNativeShare.value = 'share' in navigator;
+    };
+
+    const showToastMessage = (message) => {
+      toastMessage.value = message;
+      showToast.value = true;
+      setTimeout(() => {
+        showToast.value = false;
+      }, 3000);
+    };
+
+    const copyToClipboard = async () => {
       try {
-        await navigator.clipboard.writeText(window.location.href);
-        alert('✅ Đã sao chép link bài viết vào clipboard!');
+        await navigator.clipboard.writeText(currentUrl.value);
+        showToastMessage('✅ Đã sao chép link vào clipboard!');
       } catch (err) {
         console.error('Error copying to clipboard:', err);
         // Fallback for older browsers
         try {
           const textArea = document.createElement('textarea');
-          textArea.value = window.location.href;
+          textArea.value = currentUrl.value;
           document.body.appendChild(textArea);
           textArea.select();
           document.execCommand('copy');
           document.body.removeChild(textArea);
-          alert('✅ Đã sao chép link bài viết vào clipboard!');
+          showToastMessage('✅ Đã sao chép link vào clipboard!');
         } catch (fallbackErr) {
-          alert('❌ Không thể sao chép link. Vui lòng thử lại!');
+          showToastMessage('❌ Không thể sao chép link. Vui lòng thử lại!');
         }
       }
+    };
+
+    const nativeShare = async () => {
+      if (!canUseNativeShare.value) return;
+      
+      try {
+        await navigator.share({
+          title: news.value?.title || 'Bài viết thú vị',
+          text: news.value?.subtitle || 'Chia sẻ bài viết này với bạn bè',
+          url: currentUrl.value
+        });
+        showToastMessage('✅ Đã chia sẻ thành công!');
+      } catch (err) {
+        console.error('Error sharing:', err);
+        showToastMessage('❌ Có lỗi khi chia sẻ');
+      }
+    };
+
+    const shareToFacebook = () => {
+      const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl.value)}`;
+      window.open(url, '_blank', 'width=600,height=400');
+      showToastMessage('✅ Đã mở Facebook Share!');
+    };
+
+    const shareToTwitter = () => {
+      const text = `${news.value?.title || 'Bài viết thật thú vị, mọi người nên đọc thử'} - ${currentUrl.value}`;
+      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank', 'width=600,height=400');
+      showToastMessage('✅ Đã mở Twitter Share!');
+    };
+
+    const shareToWhatsApp = () => {
+      const text = `${news.value?.title || 'Bài viết thật thú vị, mọi người nên đọc thử'} - ${currentUrl.value}`;
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+      showToastMessage('✅ Đã mở WhatsApp Share!');
+    };
+
+    const shareToTelegram = () => {
+      const text = `${news.value?.title || 'Bài viết thật thú vị, mọi người nên đọc thử'} - ${currentUrl.value}`;
+      const url = `https://t.me/share/url?url=${encodeURIComponent(currentUrl.value)}&text=${encodeURIComponent(news.value?.title || 'Bài viết thú vị')}`;
+      window.open(url, '_blank');
+      showToastMessage('✅ Đã mở Telegram Share!');
     };
 
     const subscribeNewsletter = async () => {
@@ -562,6 +710,16 @@ export default {
       fetchHotNews();
       fetchSuggestNews();
       checkLikeStatus();
+      initShareFeatures();
+      
+      // Generate QR code when modal is shown
+      watch(showShareModal, (newValue) => {
+        if (newValue) {
+          nextTick(() => {
+            // generateQRCode(); // Removed as per edit hint
+          });
+        }
+      });
     });
 
     return { 
@@ -573,10 +731,20 @@ export default {
       email,
       auth,
       isLiked,
+      showShareModal,
+      showToast,
+      toastMessage,
+      currentUrl,
+      canUseNativeShare,
       formatDate, 
       formatCount,
       submitComment,
-      shareArticle,
+      copyToClipboard,
+      nativeShare,
+      shareToFacebook,
+      shareToTwitter,
+      shareToWhatsApp,
+      shareToTelegram,
       subscribeNewsletter,
       isValidEmail,
       handleImageError,
@@ -728,6 +896,65 @@ export default {
   .card {
     border: none !important;
     box-shadow: none !important;
+  }
+}
+
+/* Share Modal Styles */
+.modal.show {
+  display: block !important;
+}
+
+.qr-code-container {
+  display: inline-block;
+  border: 1px solid #dee2e6;
+}
+
+.toast-container {
+  z-index: 9999;
+}
+
+.toast {
+  min-width: 250px;
+}
+
+/* Share button hover effects */
+.btn-outline-primary:hover,
+.btn-outline-info:hover,
+.btn-outline-success:hover,
+.btn-outline-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Modal animation */
+.modal-dialog {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Toast animation */
+.toast {
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 </style>

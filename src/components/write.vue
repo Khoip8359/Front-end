@@ -13,14 +13,6 @@
           </div>
           <div class="d-flex gap-2">
             <button 
-              @click="saveDraft" 
-              class="btn btn-outline-secondary"
-              :disabled="isSubmitting"
-            >
-              <i class="bi bi-save me-2"></i>
-              Lưu nháp
-            </button>
-            <button 
               @click="publishNews" 
               class="btn btn-primary"
               :disabled="isSubmitting || !isFormValid"
@@ -79,10 +71,9 @@
                       accept="image/*"
                       @change="handleFileChange"
                     />
-                    <div v-if="form.thumbnail" class="mt-2">
-                      <img :src="getImageUrl(form.thumbnail)" alt="Ảnh đại diện" style="max-width: 200px; max-height: 120px; border-radius: 8px; border: 1px solid #eee;" />
+                    <div v-if="thumbnailPreview || form.thumbnail" class="mt-2">
+                      <img :src="thumbnailPreview || getImageUrl(form.thumbnail)" alt="Ảnh đại diện" style="max-width: 200px; max-height: 120px; border-radius: 8px; border: 1px solid #eee;" />
                     </div>
-                    <small class="text-muted">Chọn ảnh từ máy tính, ảnh sẽ được upload lên server.</small>
                   </div>
                 </div>
               </div>
@@ -262,6 +253,10 @@ const categories = ref([])
 const isSubmitting = ref(false)
 const sectionImageInputs = ref([])
 
+// Thêm biến thumbnailFile để lưu file tạm
+const thumbnailFile = ref(null)
+const thumbnailPreview = ref('')
+
 function isImageSection(section) {
   return typeof section === 'string' && /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(section)
 }
@@ -319,40 +314,14 @@ const removeSection = (index) => {
   }
 }
 
-const handleFileChange = async (event) => {
+const handleFileChange = (event) => {
   const file = event.target.files[0];
   if (!file) return;
-  try {
-    const imageUrl = await uploadService.uploadImage(file);
-    console.log('Ảnh upload trả về:', imageUrl);
-    form.value.thumbnail = imageUrl;
-  } catch (err) {
-    alert('Upload ảnh thất bại!');
-  }
+  thumbnailFile.value = file;
+  thumbnailPreview.value = URL.createObjectURL(file);
+  // Không upload ngay, chỉ preview
+  // Không gán form.value.thumbnail ở đây!
 };
-
-const saveDraft = async () => {
-  if (!isFormValid.value) {
-    alert('Vui lòng điền đầy đủ thông tin bắt buộc')
-    return
-  }
-  
-  isSubmitting.value = true
-  try {
-    form.value.status = 'draft'
-    const response = await newsCreateService.createNews({
-      ...form.value,
-      authorId: auth.currentUser?.user?.userId
-    })
-    
-    alert('Đã lưu nháp thành công!')
-  } catch (error) {
-    console.error('Error saving draft:', error)
-    alert('Có lỗi xảy ra khi lưu nháp: ' + (error.response?.data || error.message))
-  } finally {
-    isSubmitting.value = false
-  }
-}
 
 const publishNews = async () => {
   if (!isFormValid.value) {
@@ -365,13 +334,19 @@ const publishNews = async () => {
   }
   isSubmitting.value = true
   try {
+    // Nếu có file thumbnail mới, upload trước
+    let thumbnailUrl = form.value.thumbnail;
+    if (thumbnailFile.value) {
+      thumbnailUrl = await uploadService.uploadImage(thumbnailFile.value);
+    }
     form.value.status = 'pending'
-    console.log('Dữ liệu gửi lên:', form.value)
     const response = await newsCreateService.createNews({
       ...form.value,
+      thumbnail: thumbnailUrl, // dùng url vừa upload hoặc giữ nguyên
       authorId: auth.currentUser?.user?.userId
     })
     alert('Gửi bài thành công! Bài viết đang chờ kiểm duyệt.')
+    router.push('/reporter/dashboard')
   } catch (error) {
     console.error('Error publishing news:', error)
     alert('Có lỗi xảy ra khi gửi bài: ' + (error.response?.data || error.message))
@@ -380,29 +355,9 @@ const publishNews = async () => {
   }
 }
 
-const viewNews = () => {
-  if (createdNewsId.value) {
-    router.push(`/detail/${createdNewsId.value}`)
-  }
-}
 
-const getStatusText = (status) => {
-  switch (status) {
-    case 'draft': return 'Nháp'
-    case 'pending': return 'Chờ kiểm duyệt'
-    case 'published': return 'Công khai'
-    default: return 'Nháp'
-  }
-}
 
-const getStatusBadgeClass = (status) => {
-  switch (status) {
-    case 'draft': return 'bg-secondary'
-    case 'pending': return 'bg-warning'
-    case 'published': return 'bg-success'
-    default: return 'bg-secondary'
-  }
-}
+
 
 // Thay getImageUrl cục bộ bằng import từ service
 

@@ -13,8 +13,13 @@
         <div class="error-icon">⚠️</div>
         <div class="error-message">{{ error }}</div>
       </div>
+
+      <div v-if="!loading && !error && newsList.length !== 0" class="d-flex">
+        <button class="btn btn-primary btn-lg my-2 ms-auto" @click="$router.push('/reporter/write')">
+          <i class="bi bi-plus-circle me-2"></i>Viết bài mới
+        </button>
+      </div>
   
-      <!-- Featured Article (First page only) -->
       <div v-if="currentPage === 1 && pagedNews.length" class="featured-article">
         <RouterLink :to="`/detail/${pagedNews[0].newsId}`" class="featured-link">
           <div class="featured-card">
