@@ -166,8 +166,8 @@
           <div class="card-body p-4">
             <div class="row g-3">
               <div class="col-md-4" v-for="article in suggestNews.slice(0, 3)" :key="article.newsId">
-                <div class="card h-100 border-0 shadow-sm">
-                  <div class="card-body p-3">
+                <div class="card h-100 border-0 shadow-sm suggest-card">
+                  <div class="card-body p-3 d-flex flex-column h-100">
                     <div class="bg-light rounded-3 p-3 mb-2 text-center" v-if="!article.thumbnail">
                       <i class="bi bi-newspaper fs-3 text-muted"></i>
                     </div>
@@ -180,7 +180,7 @@
                     />
                     <h6 class="card-title">{{ article.title || `Tin tức gợi ý ${article.newsId}` }}</h6>
                     <p class="card-text small text-muted">{{ article.subtitle || 'Mô tả ngắn về bài viết...' }}</p>
-                    <RouterLink :to="`/detail/${article.newsId}`" class="btn btn-outline-success btn-sm" @click="scrollToTop">
+                    <RouterLink :to="`/detail/${article.newsId}`" class="btn btn-outline-success btn-sm mt-auto" @click="scrollToTop">
                       Đọc thêm
                     </RouterLink>
                   </div>
@@ -805,7 +805,6 @@ export default {
 
 .hot-news-title {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -897,6 +896,13 @@ export default {
     border: none !important;
     box-shadow: none !important;
   }
+}
+/* Đảm bảo các thẻ bài viết gợi ý đều nhau */
+.suggest-card {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* Share Modal Styles */

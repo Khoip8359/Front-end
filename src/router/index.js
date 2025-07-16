@@ -13,6 +13,7 @@ import Censor from '@/views/censor.vue'
 import reporterDashboard from '@/components/reporterDashboard.vue'
 import Write from '@/components/write.vue'
 import censorDashboard from '@/components/censorDashboard.vue'
+import ReporterStats from '@/components/reporterStats.vue'
   
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -73,6 +74,10 @@ const router = createRouter({
         {
           path: 'write',
           component: Write
+        },
+        {
+          path: 'stats',
+          component: ReporterStats
         }
       ]
     },
