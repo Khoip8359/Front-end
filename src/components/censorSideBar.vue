@@ -1,6 +1,5 @@
 <template>
   <div class="sidebar-container">
-    <!-- Nút mở Offcanvas cho mobile -->
     <button
       class="btn btn-primary d-lg-none sidebar-toggle-btn"
       type="button"
@@ -10,7 +9,6 @@
     >
       <i class="bi bi-list"></i>
     </button>
-    <!-- Sidebar Offcanvas cho mobile/tablet -->
     <div
       class="offcanvas offcanvas-start d-lg-none"
       tabindex="-1"
@@ -20,7 +18,7 @@
       <div class="offcanvas-header">
         <div class="d-flex align-items-center">
           <i class="bi bi-shield-check me-2"></i>
-          <h5 class="offcanvas-title mb-0 fw-bold" id="censorSidebarOffcanvasLabel">Khu vực kiểm duyệt</h5>
+          <h5 class="offcanvas-title mb-0 fw-bold" id="censorSidebarOffcanvasLabel">Kiểm duyệt</h5>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
       </div>
@@ -28,17 +26,6 @@
         <!-- Sidebar Content -->
         <nav class="sidebar-nav">
           <ul class="nav flex-column">
-            <li class="nav-item">
-              <RouterLink 
-                to="/censor/dashboard" 
-                class="nav-link sidebar-link"
-                :class="{ 'active': $route.path === '/censor/dashboard' }"
-                data-bs-dismiss="offcanvas"
-              >
-                <i class="bi bi-house-door me-3"></i>
-                <span>Trang chủ</span>
-              </RouterLink>
-            </li>
             <li class="nav-item">
               <RouterLink 
                 to="/censor/pending-articles" 
@@ -51,33 +38,11 @@
               </RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink 
-                to="/censor/approved-articles" 
-                class="nav-link sidebar-link"
-                :class="{ 'active': $route.path.includes('/approved-articles') }"
-                data-bs-dismiss="offcanvas"
-              >
-                <i class="bi bi-check2-circle me-3"></i>
-                <span>Bài viết đã duyệt</span>
-              </RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink 
-                to="/censor/rejected-articles" 
-                class="nav-link sidebar-link"
-                :class="{ 'active': $route.path.includes('/rejected-articles') }"
-                data-bs-dismiss="offcanvas"
-              >
-                <i class="bi bi-x-circle me-3"></i>
-                <span>Bài viết bị từ chối</span>
-              </RouterLink>
-            </li>
-            <li class="nav-item">
               <hr class="sidebar-divider">
             </li>
             <li class="nav-item">
             <RouterLink 
-              to="/reporter/stats" 
+              to="/censor/stats" 
               class="nav-link sidebar-link"
               :class="{ 'active': $route.path.includes('/stats') }"
             >
@@ -94,7 +59,7 @@
                 <i class="bi bi-person-circle"></i>
               </div>
               <div class="user-details">
-                <div class="user-name">Test 1</div>
+                <div class="user-name">{{ authStore.displayName }}</div>
                 <div class="user-role">Kiểm duyệt viên</div>
               </div>
             </div>
@@ -107,21 +72,11 @@
       <div class="sidebar-header">
         <div class="d-flex align-items-center">
           <i class="bi bi-shield-check me-2"></i>
-          <h5 class="mb-0 text-white fw-bold">Khu vực kiểm duyệt</h5>
+          <h5 class="mb-0 text-white fw-bold">Kiểm duyệt</h5>
         </div>
       </div>
       <nav class="sidebar-nav">
         <ul class="nav flex-column">
-          <li class="nav-item">
-            <RouterLink 
-              to="/censor/dashboard" 
-              class="nav-link sidebar-link"
-              :class="{ 'active': $route.path === '/censor/dashboard' }"
-            >
-              <i class="bi bi-house-door me-3"></i>
-              <span>Trang chủ</span>
-            </RouterLink>
-          </li>
           <li class="nav-item">
             <RouterLink 
               to="/censor/pending-articles" 
@@ -133,31 +88,11 @@
             </RouterLink>
           </li>
           <li class="nav-item">
-            <RouterLink 
-              to="/censor/approved-articles" 
-              class="nav-link sidebar-link"
-              :class="{ 'active': $route.path.includes('/approved-articles') }"
-            >
-              <i class="bi bi-check2-circle me-3"></i>
-              <span>Bài viết đã duyệt</span>
-            </RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink 
-              to="/censor/rejected-articles" 
-              class="nav-link sidebar-link"
-              :class="{ 'active': $route.path.includes('/rejected-articles') }"
-            >
-              <i class="bi bi-x-circle me-3"></i>
-              <span>Bài viết bị từ chối</span>
-            </RouterLink>
-          </li>
-          <li class="nav-item">
             <hr class="sidebar-divider">
           </li>
           <li class="nav-item">
             <RouterLink 
-              to="/reporter/stats" 
+              to="/censor/stats" 
               class="nav-link sidebar-link"
               :class="{ 'active': $route.path.includes('/stats') }"
             >
@@ -174,7 +109,7 @@
               <i class="bi bi-person-circle"></i>
             </div>
             <div class="user-details">
-              <div class="user-name">Test 1</div>
+              <div class="user-name">{{ authStore.displayName }}</div>
               <div class="user-role">Kiểm duyệt viên</div>
             </div>
           </div>
@@ -183,6 +118,11 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
+</script>
 
 <style scoped>
 .sidebar-container {

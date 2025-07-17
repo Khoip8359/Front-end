@@ -12,8 +12,10 @@ import Reporter from '@/views/reporter.vue'
 import Censor from '@/views/censor.vue'
 import reporterDashboard from '@/components/reporterDashboard.vue'
 import Write from '@/components/write.vue'
-import censorDashboard from '@/components/censorDashboard.vue'
+import censorPending from '@/components/censorPending.vue'
 import ReporterStats from '@/components/reporterStats.vue'
+import CensorChecking from '@/components/censorChecking.vue'
+import CensorStats from '@/components/censorStats.vue'
   
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,8 +88,16 @@ const router = createRouter({
       component: Censor,
       children:[
         {
-          path:"dashboard",
-          component: censorDashboard
+          path:"pending-articles",
+          component: censorPending
+        },
+        {
+          path:"/checking/:newsId",
+          component: CensorChecking
+        },
+        {
+          path:"stats",
+          component: CensorStats
         }
       ]
     }

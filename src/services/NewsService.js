@@ -89,13 +89,43 @@ export const newsService = {
     }
   },
 
-  async getNewsByUser(userId){
-    try{
+  async getNewsByUser(userId) {
+    try {
       const response = await apiClient.get(`/api/news/${userId}`)
       return response.data
     } catch (error) {
-      console.error('getNewsByCategory error:', error)
-      throw new Error('Không thể tải tin tức theo danh mục')
+      console.error('getNewsByUser error:', error)
+      throw new Error('Không thể tải tin tức theo User')
+    }
+  },
+  
+  async getPendingArticles(page = 0, size = 10) {
+    try {
+      const response = await apiClient.get(`/api/pending-articles?page=${page}&size=${size}`)
+      return response.data
+    } catch (error) {
+      console.error('getPendingArticles error:', error)
+      throw new Error('Không thể tải bài viết đang chờ duyệt')
+    }
+  },
+
+  async updateNewsStatus(newsId, status) {
+    try {
+      const response = await apiClient.put(`/api/news/update-status/${newsId}?status=${status}`);
+      return response.data;
+    } catch (error) {
+      console.error('updateNewsStatus error:', error);
+      throw new Error('Không thể cập nhật trạng thái bài viết');
+    }
+  },
+
+  async getAllNews(){
+    try {
+      const response = await apiClient.get('/api/news/all');
+      return response.data;
+    } catch (error) {
+      console.log('Get all news error :', error);
+      throw new Error('Không thể lấy toàn bộ tin tức');
     }
   }
 }
