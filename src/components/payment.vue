@@ -12,7 +12,7 @@
         <div class="account-section">
           <div class="account-info">
             <div class="info-row">
-              <span class="info-label">Tên tài khoản</span>
+              <span class="info-label">Người nhận</span>
               <span class="info-value account-name">{{ accountName }}</span>
             </div>
             <div class="info-row">
