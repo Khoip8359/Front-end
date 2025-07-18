@@ -16,6 +16,8 @@ import censorPending from '@/components/censorPending.vue'
 import ReporterStats from '@/components/reporterStats.vue'
 import CensorChecking from '@/components/censorChecking.vue'
 import CensorStats from '@/components/censorStats.vue'
+import PaymentView from '@/views/paymentView.vue'
+import PaymentChoose from '@/components/paymentChoose.vue'
   
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,7 +54,17 @@ const router = createRouter({
         {
           path: '/payment',
           name: 'payment',
-          component: Payment
+          component: PaymentView,
+          children: [
+            {
+              path: 'purchase',
+              component: Payment
+            },
+            {
+              path: 'choose',
+              component: PaymentChoose 
+            }
+          ]
         }
       ]
     },

@@ -134,9 +134,9 @@
                   </RouterLink>
                 </li>
                 <li>
-                  <RouterLink class="dropdown-item modern-dropdown-item" :to="`/payment`">
+                  <RouterLink class="dropdown-item modern-dropdown-item" :to="`/payment/choose`">
                     <i class="bi bi-wallet2 me-3"></i>
-                    <span>Nạp thêm point</span>
+                    <span>Thêm point</span>
                   </RouterLink>
                 </li>
                 <li>

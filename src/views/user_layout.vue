@@ -265,9 +265,28 @@ function getOtherUserId(merge) {
 function formatTime(timestamp) {
   if (!timestamp) return '';
   const date = new Date(timestamp);
+  const now = new Date();
   const hours = date.getHours();
   const minutes = date.getMinutes();
-  return `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+  const timeStr = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+  
+  // Kiểm tra nếu là hôm nay
+  if (date.toDateString() === now.toDateString()) {
+    return `Hôm nay ${timeStr}`;
+  }
+  
+  // Kiểm tra nếu là hôm qua
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) {
+    return `Hôm qua ${timeStr}`;
+  }
+  
+  // Nếu là ngày khác, hiển thị đầy đủ ngày tháng
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${day}/${month}/${year} ${timeStr}`;
 }
 
 function isCurrentUserMessage(msg) {
